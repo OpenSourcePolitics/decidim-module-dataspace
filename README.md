@@ -1,11 +1,10 @@
 # Decidim::Dataspace
 
-dataspace.
+Decidim Data space is an API that allows decidim applications to communicate with each other.
 
 ## Usage
 
-Dataspace will be available as a Component for a Participatory
-Space.
+Data space will be available as a module.
 
 ## Installation
 
@@ -20,6 +19,24 @@ And then execute:
 ```bash
 bundle
 ```
+
+## API endpoints
++ Retrieve all data from the data space\
+GET "/data"
++ Retrieve all containers from the data space\
+GET "/data/containers"
++ Retrieve a container using its reference\
+GET "/data/containers/:reference"
++ Retrieve all contributions from the data space\
+GET "/data/contributions"
++ Retrieve a contribution using its reference\
+GET "/data/contributions/:reference"
++ Retrieve all authors from the data space\
+GET "/data/authors"
++ Retrieve an author using its reference\
+GET "/data/authors/:reference"
+
+Please note that the reference is the last part of the URL and **needs to be URL encoded**
 
 ## Contributing
 
