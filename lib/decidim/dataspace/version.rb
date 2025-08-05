@@ -4,7 +4,7 @@ module Decidim
   # This holds the decidim-meetings version.
   module Dataspace
     def self.decidim_version
-      "~> 0.29.0"
+      "~> 0.29.3"
     end
 
     def self.version
