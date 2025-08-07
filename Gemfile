@@ -7,8 +7,8 @@ ruby RUBY_VERSION
 gem "decidim", "~> 0.29.1"
 gem "decidim-dataspace", path: "."
 
-gem "puma", ">= 6.3.1"
 gem "bootsnap", "~> 1.4"
+gem "puma", ">= 6.3.1"
 
 group :development, :test do
   gem "byebug", "~> 11.0", platform: :mri
