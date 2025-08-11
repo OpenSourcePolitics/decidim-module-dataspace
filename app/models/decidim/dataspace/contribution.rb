@@ -5,6 +5,7 @@ module Decidim
     class Contribution < Decidim::Dataspace::Interoperable
       self.table_name = "dataspace_contributions"
 
+      belongs_to :interoperable
       belongs_to :container
       belongs_to :parent, class_name: "Decidim::Dataspace::Contribution", inverse_of: :children, optional: true
       has_many :children, class_name: "Decidim::Dataspace::Contribution", foreign_key: "parent_id", inverse_of: :parent, dependent: :destroy
@@ -13,6 +14,8 @@ module Decidim
       # rubocop:enable Rails/HasAndBelongsToMany
 
       validate :title_or_content
+
+      delegate :reference, :source, :metadata, :created_at, :updated_at, :deleted_at, to: :interoperable
 
       private
 
