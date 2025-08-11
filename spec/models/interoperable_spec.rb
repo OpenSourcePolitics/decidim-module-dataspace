@@ -20,8 +20,21 @@ module Decidim
           it { is_expected.not_to be_valid }
         end
 
+        context "with reference not unique" do
+          let(:interoperable_one) { create(:interoperable) }
+          let(:interoperable) { build(:interoperable, reference: interoperable_one.reference) }
+
+          it { is_expected.not_to be_valid }
+        end
+
         context "without source" do
           let(:interoperable) { build(:interoperable, :source_nil) }
+
+          it { is_expected.not_to be_valid }
+        end
+
+        context "with source not url" do
+          let(:interoperable) { build(:interoperable, source: "example.org") }
 
           it { is_expected.not_to be_valid }
         end

@@ -8,20 +8,34 @@ module Decidim
       subject { contribution }
 
       context "when valid" do
-        let(:contribution) { build(:contribution) }
-
-        it { is_expected.to be_valid }
-
-        context "without title but with content" do
-          let(:contribution) { build(:contribution, title: nil) }
+        context "when build" do
+          let(:contribution) { build(:contribution) }
 
           it { is_expected.to be_valid }
+
+          context "without title but with content" do
+            let(:contribution) { build(:contribution, title: nil) }
+
+            it { is_expected.to be_valid }
+          end
+
+          context "without content but with title" do
+            let(:contribution) { build(:contribution, content: nil) }
+
+            it { is_expected.to be_valid }
+          end
         end
 
-        context "without content but with title" do
-          let(:contribution) { build(:contribution, content: nil) }
+        context "when create" do
+          let(:contribution) { create(:contribution) }
 
-          it { is_expected.to be_valid }
+          it "is expected to give the different values" do
+            expect(contribution.title).to eq("Contribution 1")
+            expect(contribution.content).to eq("Contenu de la contribution 1")
+            expect(contribution.reference).to eq("C01")
+            expect(contribution.source).to eq("https://example.com/contribution/1")
+            expect(contribution.metadata).to eq({ "status" => "published", "type" => "proposal" })
+          end
         end
       end
 

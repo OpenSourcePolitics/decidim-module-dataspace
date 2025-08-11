@@ -29,45 +29,61 @@ FactoryBot.define do
   factory :container, class: "Decidim::Dataspace::Container" do
     name { "Space 1" }
     description { "This is the first participatory space.\nIt allows users to contribute and discuss various topics." }
-    reference { "B01" }
-    source { "https://example.com" }
-    deleted_at { nil }
-    metadata { { "type": "participatory_process", "visibility": "public", "status": "published" } }
+
+    transient do
+      reference { "B01" }
+      source { "https://example.com/" }
+      metadata { { "type" => "participatory_process", "visibility" => "public", "status" => "published" } }
+    end
+
+    interoperable { build(:interoperable, reference: reference, source: source, metadata: metadata) }
   end
 
   factory :author_one, class: "Decidim::Dataspace::Author" do
     name { "Jane Doe" }
-    reference { "A01" }
-    source { "https://example.com/account/janedoe" }
+
+    transient do
+      reference { "A01" }
+      source { "https://example.com/account/janedoe" }
+    end
+
+    interoperable { build(:interoperable, reference: reference, source: source) }
   end
 
   factory :author_two, class: "Decidim::Dataspace::Author" do
     name { "John Smith" }
-    reference { "A02" }
-    source { "https://example.com/account/johnsmith" }
+
+    transient do
+      reference { "A02" }
+      source { "https://example.com/account/johnsmith" }
+    end
+
+    interoperable { build(:interoperable, reference: reference, source: source) }
   end
 
   factory :contribution, class: "Decidim::Dataspace::Contribution" do
-    sequence(:title) { |n| "Contribution #{n}" }
-    sequence(:content) { |n| "Contenu de la contribution #{n}\nsur plusieurs lignes" }
-    sequence(:reference) { |n| "C0#{n}" }
-    sequence(:source) { |n| "https://example.com/contribution/#{n}" }
-    metadata { { "type": "proposal", "status": "published" } }
-    deleted_at { 1.day.ago }
+    title { "Contribution 1" }
+    content { "Contenu de la contribution 1" }
     locale { "fr" }
     association :container
+
+    transient do
+      reference { "C01" }
+      source { "https://example.com/contribution/1" }
+      metadata { { "status" => "published", "type" => "proposal" } }
+    end
+
+    interoperable { build(:interoperable, reference: reference, source: source, metadata: metadata) }
 
     trait :contrib_one do
       after :create do |contribution, _evaluator|
         contribution.authors << create(:author_one)
-        contribution.save!
       end
     end
 
     trait :contrib_two do
       after :create do |contribution|
         contribution.authors << create(:author_two)
-        contribution.save!
       end
     end
 
@@ -75,17 +91,12 @@ FactoryBot.define do
       after :create do |contribution|
         contribution.authors << create(:author_one)
         contribution.authors << create(:author_two)
-        contribution.save!
       end
     end
 
     trait :with_parent do
       after :create do |contribution|
-        contrib = create(:contribution, :contrib_one)
-        contribution.parent = contrib
-        contribution.save!
-        contrib.children << contribution
-        contrib.save!
+        contribution.parent = build(:contribution, reference: "C22", source: "https://example.com/contribution/22")
       end
     end
   end
