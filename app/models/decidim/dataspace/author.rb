@@ -10,8 +10,6 @@ module Decidim
       has_and_belongs_to_many :contributions, join_table: :decidim_contributions_authors
       # rubocop:enable Rails/HasAndBelongsToMany
 
-      accepts_nested_attributes_for :interoperable
-
       delegate :reference, :source, :created_at, :updated_at, :deleted_at, to: :interoperable
     end
   end

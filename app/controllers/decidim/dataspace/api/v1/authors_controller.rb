@@ -13,11 +13,6 @@ module Decidim
         render json: render_author(@author), status: :ok
       end
 
-      def create
-        author = Author.new(author_params)
-        render json: render_author(author), status: :created if author.save!
-      end
-
       private
 
       def render_author(author)
@@ -36,10 +31,6 @@ module Decidim
         return resource_not_found("Author") unless @author
 
         @author
-      end
-
-      def author_params
-        params.require(:author).permit(:name, interoperable_attributes: [:reference, :source])
       end
     end
   end
