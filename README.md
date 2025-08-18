@@ -17,7 +17,10 @@ gem "decidim-dataspace"
 And then execute:
 
 ```bash
-bundle
+bundle install
+# For versions >= 0.27
+bundle exec rake railties:install:migrations
+bundle exec rake db:migrate
 ```
 
 ## API endpoints
