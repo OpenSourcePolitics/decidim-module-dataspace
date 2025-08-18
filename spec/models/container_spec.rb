@@ -39,6 +39,33 @@ module Decidim
           it { is_expected.not_to be_valid }
         end
       end
+
+      context "with parent and children" do
+        let(:container) { create(:container) }
+        let(:parent_container) { create(:container, reference: "B02", container: container.container) }
+
+        before do
+          # rubocop:disable Rails/SkipsModelValidations
+          container.update_column("parent_id", parent_container.id)
+          # rubocop:enable Rails/SkipsModelValidations
+        end
+
+        it "has one parent" do
+          expect(subject.parent).not_to be_nil
+        end
+
+        it "has one child" do
+          expect(subject.parent.children.size).to eq(1)
+        end
+      end
+
+      context "when deleting container" do
+        let!(:container) { create(:container) }
+
+        it "destroys associated interoperable" do
+          expect { container.destroy }.to change(Decidim::Dataspace::Interoperable, :count).by(-1)
+        end
+      end
     end
   end
 end

@@ -37,6 +37,14 @@ module Decidim
           it { is_expected.not_to be_valid }
         end
       end
+
+      context "when deleting author" do
+        let!(:author) { create(:author_one) }
+
+        it "destroys associated interoperable" do
+          expect { author.destroy }.to change(Decidim::Dataspace::Interoperable, :count).by(-1)
+        end
+      end
     end
   end
 end

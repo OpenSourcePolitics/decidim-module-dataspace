@@ -85,7 +85,14 @@ module Decidim
       end
 
       context "with parent and children" do
-        let(:contribution) { create(:contribution, :with_parent) }
+        let(:contribution) { create(:contribution) }
+        let(:parent_contrib) { create(:parent_contrib, container: contribution.container) }
+
+        before do
+          # rubocop:disable Rails/SkipsModelValidations
+          contribution.update_column("parent_id", parent_contrib.id)
+          # rubocop:enable Rails/SkipsModelValidations
+        end
 
         it "has one parent" do
           expect(subject.parent).not_to be_nil
@@ -93,6 +100,14 @@ module Decidim
 
         it "has one child" do
           expect(subject.parent.children.size).to eq(1)
+        end
+      end
+
+      context "when deleting contribution" do
+        let!(:contribution) { create(:contribution) }
+
+        it "destroys associated interoperable" do
+          expect { contribution.destroy }.to change(Decidim::Dataspace::Interoperable, :count).by(-1)
         end
       end
     end
