@@ -2,6 +2,7 @@ name: "[CI] Dataspace"
 on:
   push:
     branches:
+      - master
       - develop
       - release/*
       - "*-stable"
