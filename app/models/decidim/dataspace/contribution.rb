@@ -5,10 +5,10 @@ module Decidim
     class Contribution < Decidim::Dataspace::Interoperable
       self.table_name = "dataspace_contributions"
 
-      belongs_to :interoperable
-      belongs_to :container
+      belongs_to :interoperable, inverse_of: :container, class_name: "Decidim::Dataspace::Interoperable", dependent: :destroy
+      belongs_to :container, class_name: "Decidim::Dataspace::Container"
       belongs_to :parent, class_name: "Decidim::Dataspace::Contribution", inverse_of: :children, optional: true
-      has_many :children, class_name: "Decidim::Dataspace::Contribution", foreign_key: "parent_id", inverse_of: :parent, dependent: :destroy
+      has_many :children, foreign_key: "parent_id", class_name: "Decidim::Dataspace::Contribution", inverse_of: :parent, dependent: :destroy
       # rubocop:disable Rails/HasAndBelongsToMany
       has_and_belongs_to_many :authors, join_table: :decidim_contributions_authors
       # rubocop:enable Rails/HasAndBelongsToMany

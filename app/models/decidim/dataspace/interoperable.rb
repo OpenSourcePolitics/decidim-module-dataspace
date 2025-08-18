@@ -9,9 +9,9 @@ module Decidim
       validates :reference, uniqueness: true
       validates :source, url: true
 
-      has_one :container, class_name: "Decidim::Dataspace::Container"
-      has_one :contribution, class_name: "Decidim::Dataspace::Contribution"
-      has_one :author, class_name: "Decidim::Dataspace::Author"
+      has_one :container, inverse_of: :interoperable, class_name: "Decidim::Dataspace::Container", dependent: nil
+      has_one :contribution, inverse_of: :interoperable, class_name: "Decidim::Dataspace::Contribution", dependent: nil
+      has_one :author, inverse_of: :interoperable, class_name: "Decidim::Dataspace::Author", dependent: nil
     end
   end
 end
