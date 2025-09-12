@@ -11,6 +11,43 @@ module Decidim
       has_many :contributions, dependent: :destroy, class_name: "Decidim::Dataspace::Contribution"
 
       delegate :reference, :source, :metadata, :created_at, :updated_at, :deleted_at, to: :interoperable
+
+      def self.from_proposals
+        Decidim::Proposals::Proposal.all.map do |proposal|
+          Container.from_proposal(proposal)
+        end.uniq { |hash| hash[:reference] }
+      end
+
+      def self.from_params(params)
+        container = Decidim::Assembly.find_by(reference: params).presence || Decidim::ParticipatoryProcess.find_by(reference: params).presence
+        return nil unless container
+
+        {
+          "reference": container.reference,
+          "source": Decidim::ResourceLocatorPresenter.new(container).url,
+          "name": container.title["en"],
+          "description": container.description["en"],
+          "metadata": {},
+          "created_at": container.created_at,
+          "updated_at": container.updated_at,
+          "deleted_at": nil
+        }
+      end
+
+      def self.from_proposal(proposal)
+        container = proposal.component.participatory_space_type.constantize.find(proposal.component.participatory_space_id)
+
+        {
+          "reference": container.reference,
+          "source": Decidim::ResourceLocatorPresenter.new(container).url,
+          "name": container.title["en"],
+          "description": container.description["en"],
+          "metadata": {},
+          "created_at": container.created_at,
+          "updated_at": container.updated_at,
+          "deleted_at": nil
+        }
+      end
     end
   end
 end
