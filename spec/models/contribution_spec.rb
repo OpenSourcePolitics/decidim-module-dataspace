@@ -110,6 +110,34 @@ module Decidim
           expect { contribution.destroy }.to change(Decidim::Dataspace::Interoperable, :count).by(-1)
         end
       end
+
+      context "when using self.from_proposals method" do
+        let(:component) { create(:proposal_component) }
+        let!(:proposal) { create(:proposal, component:) }
+        let!(:proposal_two) { create(:proposal, component:) }
+        let!(:proposal_three) { create(:proposal, component:) }
+
+        it "returns an array with 3 hash elements" do
+          method_call = Contribution.from_proposals
+          expect(method_call.class).to eq(Array)
+          expect(method_call.size).to eq(3)
+          expect(method_call.first.class).to eq(Hash)
+        end
+      end
+
+      context "when using self.proposal method" do
+        let(:component) { create(:proposal_component) }
+        let!(:proposal) { create(:proposal, :participant_author, component:) }
+
+        it "returns an array with 1 hash element" do
+          method_call = Contribution.proposal(proposal.reference)
+          expect(method_call.class).to eq(Hash)
+          expect(method_call.size).to eq(10)
+          expect(method_call[:reference]).to eq(proposal.reference)
+          # reference for user author is name
+          expect(method_call[:authors]).to eq([proposal.authors.first.name])
+        end
+      end
     end
   end
 end

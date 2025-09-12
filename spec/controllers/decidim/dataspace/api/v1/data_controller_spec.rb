@@ -5,9 +5,10 @@ require "spec_helper"
 describe Decidim::Dataspace::Api::V1::DataController do
   routes { Decidim::Dataspace::Engine.routes }
 
-  let!(:author) { create(:author_one) }
-  let(:container) { create(:container) }
-  let!(:contribution) { create(:contribution, container:) }
+  let(:component) { create(:proposal_component) }
+  let!(:proposal) { create(:proposal, :participant_author, component:) }
+  let!(:proposal_two) { create(:proposal, :official_meeting, component:) }
+  let!(:proposal_three) { create(:proposal, :official, component:) }
 
   describe "index" do
     before do
@@ -21,29 +22,9 @@ describe Decidim::Dataspace::Api::V1::DataController do
     end
 
     it "returns all data" do
-      expect(response.parsed_body).to eq({ "containers" => [{ "reference" => container.reference,
-                                                              "source" => container.source,
-                                                              "name" => container.name,
-                                                              "description" => container.description,
-                                                              "metadata" => container.metadata,
-                                                              "created_at" => container.created_at.as_json,
-                                                              "updated_at" => container.updated_at.as_json,
-                                                              "deleted_at" => container.deleted_at }],
-                                           "contributions" => [{ "reference" => contribution.reference,
-                                                                 "source" => contribution.source,
-                                                                 "container" => contribution.container.reference,
-                                                                 "locale" => contribution.locale,
-                                                                 "title" => contribution.title,
-                                                                 "content" => contribution.content,
-                                                                 "authors" => contribution.authors&.map(&:reference),
-                                                                 "metadata" => contribution.metadata,
-                                                                 "parent" => contribution.parent&.reference,
-                                                                 "created_at" => contribution.created_at.as_json,
-                                                                 "updated_at" => contribution.updated_at.as_json,
-                                                                 "deleted_at" => contribution.deleted_at }],
-                                           "authors" => [{ "reference" => author.reference,
-                                                           "name" => author.name,
-                                                           "source" => author.source }] })
+      expect(response.parsed_body["contributions"].size).to eq(3)
+      expect(response.parsed_body["authors"].size).to eq(3)
+      expect(response.parsed_body["containers"].size).to eq(1)
     end
   end
 end
