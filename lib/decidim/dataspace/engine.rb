@@ -27,6 +27,12 @@ module Decidim
         end
       end
 
+      initializer "dataspace-extends" do
+        config.after_initialize do
+          require "extends/controllers/decidim/proposals/proposals_controller_extends"
+        end
+      end
+
       initializer "dataspace.mount_routes" do
         Decidim::Core::Engine.routes do
           mount Decidim::Dataspace::Engine => "/"
