@@ -19,6 +19,14 @@ module Decidim
         # root to: "dataspace#index"
       end
 
+      initializer "decidim-dataspace.add_proposal_component_settings" do
+        manifest = Decidim.find_component_manifest("proposals")
+        manifest.settings(:global) do |settings|
+          settings.attribute :add_integration, type: :boolean, default: false
+          settings.attribute :integration_url, type: :string
+        end
+      end
+
       def load_seed
         nil
       end
