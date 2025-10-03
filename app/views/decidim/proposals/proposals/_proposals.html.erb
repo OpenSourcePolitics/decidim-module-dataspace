@@ -1,0 +1,41 @@
+<% if params.dig("filter", "with_availability").present? && params["filter"]["with_availability"] == "withdrawn" %>
+  <%= cell("decidim/announcement", t("decidim.proposals.proposals.index.text_banner",
+                                     go_back_link: link_to(t("decidim.proposals.proposals.index.click_here"), proposals_path("filter[with_availability]" => nil))
+  ).html_safe, callout_class: "warning [&>a]:text-secondary") %>
+<% end %>
+
+<% if @proposals.empty? && @external_proposals.empty? %>
+  <%= cell("decidim/announcement", params[:filter].present? ? t(".empty_filters") : t(".empty")) %>
+<% else %>
+  <div class="flex items-center justify-between">
+    <h2 class="h5 md:h3 decorator" aria-live="polite" aria-atomic="true"><%= t("count", scope: "decidim.proposals.proposals.index", count: @total_count || @proposals.total_count ) %></h2>
+    <div class="view-layout__links flex view_mode__links">
+      <%= toggle_view_mode_link(@view_mode, "list", t("list_mode", scope: "decidim.proposals.proposals.index"), params) %>
+      <%= toggle_view_mode_link(@view_mode, "grid", t("grid_mode", scope: "decidim.proposals.proposals.index"), params) %>
+    </div>
+  </div>
+
+  <%= order_selector available_orders, i18n_scope: "decidim.proposals.proposals.orders" %>
+
+  <div class="<%= proposals_container_class(@view_mode) %>">
+    <%= render partial: "proposal", collection: @proposals, as: :proposal, locals: { card_size: card_size_for_view_mode(@view_mode) } %>
+    <% if @external_proposals.present? %>
+      <%= render partial: "external_proposal", collection: @external_proposals, as: :external_proposal, locals: { card_size: card_size_for_view_mode(@view_mode) } %>
+    <% end %>
+  </div>
+  <% if @total_pages && @total_pages > 1 %>
+    <% per_page = (params[:per_page] || Decidim::Paginable::OPTIONS.first).to_i %>
+    <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-1 py-8 md:py-16 md:flex-wrap">
+      <%= render partial: "decidim/shared/results_per_page", locals: { per_page: }, formats: [:html] %>
+      <%=  paginate @pagination, window: 2, outer_window: 1, theme: "decidim" %>
+    </div>
+  <% elsif !@total_pages %>
+    <%= decidim_paginate @proposals %>
+  <% end %>
+<% end %>
+
+<% if params.dig("filter", "with_availability").present? && params["filter"]["with_availability"] == "withdrawn" %>
+  <%= link_to t("decidim.proposals.proposals.index.see_all"), proposals_path("filter[with_availability]" => nil), class: "button button__sm button__text-secondary" %>
+<% else %>
+  <%= link_to t("decidim.proposals.proposals.index.see_all_withdrawn"), proposals_path(filter: { with_availability: "withdrawn", with_any_state: [] }), class: "button button__sm button__text-secondary" %>
+<% end %>

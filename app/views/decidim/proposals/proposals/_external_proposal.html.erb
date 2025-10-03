@@ -1,0 +1,20 @@
+<% if card_size == :g %>
+  <%= link_to external_proposal["source"], class: "card__grid", id: external_proposal["reference"] do %>
+    <div class="card__grid-img">
+        <%= external_icon "media/images/placeholder-card-g.svg", class: "card__placeholder-g" %>
+    </div>
+    <div class="card__grid-text">
+      <%= content_tag :h4, external_proposal["title"], class: "h4 text-secondary" %>
+      <p>Proposal from external platform</p>
+    </div>
+  <% end %>
+<% else %>
+  <%= link_to external_proposal["source"], class: "card__list", id: external_proposal["reference"] do %>
+    <%= content_tag(:div, class: "card__list-content") do %>
+      <%= content_tag :h4, class: "h4 card__list-title" do %>
+        <%= external_proposal["title"] %>
+      <% end %>
+      <p>Proposal from external platform</p>
+    <% end %>
+  <% end %>
+<% end %>
