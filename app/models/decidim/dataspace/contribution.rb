@@ -18,7 +18,10 @@ module Decidim
       delegate :reference, :source, :metadata, :created_at, :updated_at, :deleted_at, to: :interoperable
 
       def self.from_proposals
-        Decidim::Proposals::Proposal.includes(:component).all.map do |proposal|
+        Decidim::Proposals::Proposal.published
+                                    .not_hidden
+                                    .only_amendables
+                                    .includes(:component).all.map do |proposal|
           {
             reference: proposal.reference,
             source: Decidim::ResourceLocatorPresenter.new(proposal).url,
