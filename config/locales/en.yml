@@ -4,3 +4,9 @@ en:
     components:
       dataspace:
         name: Dataspace
+      proposals:
+        settings:
+          global:
+            add_integration: Add an integration
+            integration_url: Url platform to integrate
+            integration_url_text: "Provide the url, for instance https://www.platform.com"
