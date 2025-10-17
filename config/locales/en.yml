@@ -9,7 +9,6 @@ en:
           global:
             add_integration: Add an integration
             integration_url: Url platform to integrate
-            integration_url_text: "Provide the url, for instance https://www.platform.com"
             preferred_locale: Preferred language
             preferred_locale_options:
               ca: ca
