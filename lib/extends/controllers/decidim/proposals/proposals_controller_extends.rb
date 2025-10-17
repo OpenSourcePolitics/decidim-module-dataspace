@@ -18,11 +18,13 @@ module ProposalsControllerExtends
       else
         if component_settings.add_integration &&
            component_settings.integration_url.present? &&
-           external_proposals ||= GetDataFromApi.contributions(component_settings.integration_url).presence
+           data ||= GetDataFromApi.data(component_settings.integration_url, component_settings.preferred_locale || "en").presence
 
+          external_proposals ||= data["contributions"]
+          @platform ||= component_settings.integration_url.split("//")[1]
+          @authors ||= data["authors"]
           proposals = search.result
           proposals = reorder(proposals.includes(:component, :coauthorships, :attachments))
-          external_proposals = external_proposals["contributions"]
           @total_count = proposals.size + external_proposals.size
           @current_page = params[:page].to_i
           @current_page = 1 if @current_page < 1
