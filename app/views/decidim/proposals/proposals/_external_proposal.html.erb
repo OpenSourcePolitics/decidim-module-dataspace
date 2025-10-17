@@ -1,11 +1,17 @@
 <% if card_size == :g %>
-  <%= link_to external_proposal["source"], class: "card__grid", id: external_proposal["reference"] do %>
+  <%= link_to external_proposal["source"], class: "card__grid-external", id: external_proposal["reference"] do %>
     <div class="card__grid-img">
         <%= external_icon "media/images/placeholder-card-g.svg", class: "card__placeholder-g" %>
+        <p class="card__grid-img-text"><%= t('.view_from', platform: @platform) %></p>
     </div>
     <div class="card__grid-text">
       <%= content_tag :h4, external_proposal["title"], class: "h4 text-secondary" %>
-      <p>Proposal from external platform</p>
+    </div>
+    <div class="card__grid-author">
+      <div class="author__avatar-container">
+        <img alt="default avatar" class="author__avatar" src="<%= asset_pack_path("media/images/default-avatar.svg") %>">
+      </div>
+      <p class="author_name"><%= @authors.select{|author| external_proposal["authors"].include?(author["reference"])}.map{|author| author["name"]}.join(', ') %></p>
     </div>
   <% end %>
 <% else %>
