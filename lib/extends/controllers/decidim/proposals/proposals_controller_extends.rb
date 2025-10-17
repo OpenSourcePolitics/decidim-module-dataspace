@@ -20,9 +20,9 @@ module ProposalsControllerExtends
            component_settings.integration_url.present? &&
            data ||= GetDataFromApi.data(component_settings.integration_url, component_settings.preferred_locale || "en").presence
 
-          external_proposals ||= data["contributions"]
-          @platform ||= component_settings.integration_url.split("//")[1]
-          @authors ||= data["authors"]
+          external_proposals = data["contributions"]
+          @platform = component_settings.integration_url.split("//")[1]
+          @authors = data["authors"]
           proposals = search.result
           proposals = reorder(proposals.includes(:component, :coauthorships, :attachments))
           @total_count = proposals.size + external_proposals.size

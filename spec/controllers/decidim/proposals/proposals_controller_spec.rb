@@ -53,9 +53,9 @@ module Decidim
                 "deleted_at": nil }
             end
             let(:contrib_two) do
-              { "reference":  "JD-PROP-2025-09-20",
-                "source":  "http://localhost:3000/assemblies/smile-trivial/f/25/proposals/20",
-                "container":  "JD-ASSE-2025-09-1",
+              { "reference": "JD-PROP-2025-09-20",
+                "source": "http://localhost:3000/assemblies/smile-trivial/f/25/proposals/20",
+                "container": "JD-ASSE-2025-09-1",
                 "locale": "en",
                 "title": "Test two",
                 "content": "Non et vel",

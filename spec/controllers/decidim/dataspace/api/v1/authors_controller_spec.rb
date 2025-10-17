@@ -80,7 +80,6 @@ describe Decidim::Dataspace::Api::V1::AuthorsController do
                                                "source" => Decidim::ResourceLocatorPresenter.new(author).url })
         end
       end
-
     end
 
     context "when author does not exist" do

@@ -27,11 +27,12 @@ module Decidim
         locale = preferred_locale if available_locales.present? && available_locales.include?(preferred_locale)
 
         proposals.all.map do |proposal|
+          component = proposal.component
           {
             reference: proposal.reference,
             source: Decidim::ResourceLocatorPresenter.new(proposal).url,
-            container: proposal.component.participatory_space_type.constantize.find(proposal.component.participatory_space_id).reference,
-            locale: locale,
+            container: component.participatory_space_type.constantize.find(component.participatory_space_id).reference,
+            locale:,
             title: proposal.title[locale],
             content: proposal.body[locale],
             authors: Contribution.authors(proposal),
@@ -48,11 +49,12 @@ module Decidim
 
         available_locales = proposal.organization.available_locales
         locale = available_locales.include?(preferred_locale) ? preferred_locale : "en"
+        component = proposal.component
         {
           reference: proposal.reference,
           source: Decidim::ResourceLocatorPresenter.new(proposal).url,
-          container: proposal.component.participatory_space_type.constantize.find(proposal.component.participatory_space_id).reference,
-          locale: locale,
+          container: component.participatory_space_type.constantize.find(component.participatory_space_id).reference,
+          locale:,
           title: proposal.title[locale],
           content: proposal.body[locale],
           authors: Contribution.authors(proposal),

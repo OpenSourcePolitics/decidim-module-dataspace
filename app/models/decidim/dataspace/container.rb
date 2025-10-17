@@ -16,13 +16,15 @@ module Decidim
         proposals = Decidim::Proposals::Proposal.published
                                                 .not_hidden
                                                 .only_amendables
+                                                .includes([:component])
         locale = "en"
         available_locales = proposals.first&.organization&.available_locales
         locale = preferred_locale if available_locales.present? && available_locales.include?(preferred_locale)
 
-        proposals.map do |proposal|
+        containers = proposals.map do |proposal|
           Container.from_proposal(proposal, locale)
-        end.uniq { |hash| hash[:reference] }
+        end
+        containers.uniq { |hash| hash[:reference] }
       end
 
       def self.from_params(ref, preferred_locale)

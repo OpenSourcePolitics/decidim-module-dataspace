@@ -4,7 +4,6 @@ require "net/http"
 require "uri"
 
 class GetDataFromApi
-
   def self.data(url, preferred_locale)
     uri = URI(url + "/api/v1/data?preferred_locale=#{preferred_locale}")
     begin
