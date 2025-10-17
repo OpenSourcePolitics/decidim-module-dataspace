@@ -6,7 +6,7 @@ describe Decidim::Dataspace::Api::V1::AuthorsController do
   routes { Decidim::Dataspace::Engine.routes }
 
   describe "index" do
-    context "when there are authors" do
+    context "when there are proposals and authors" do
       let(:component) { create(:proposal_component) }
       let!(:proposal) { create(:proposal, :participant_author, component:) }
       let!(:proposal_two) { create(:proposal, :official_meeting, component:) }
@@ -21,11 +21,11 @@ describe Decidim::Dataspace::Api::V1::AuthorsController do
 
       it "returns all authors" do
         get :index
-        expect(response.parsed_body["authors"].size).to eq(3)
+        expect(response.parsed_body.size).to eq(3)
       end
     end
 
-    context "when there are no authors" do
+    context "when there are no proposals and so no authors" do
       it "is a not_found and returns json without authors" do
         get :index
         expect(response).to have_http_status(:not_found)

@@ -118,7 +118,7 @@ module Decidim
         let!(:proposal_three) { create(:proposal, component:) }
 
         it "returns an array with 3 hash elements" do
-          method_call = Contribution.from_proposals
+          method_call = Contribution.from_proposals("en")
           expect(method_call.class).to eq(Array)
           expect(method_call.size).to eq(3)
           expect(method_call.first.class).to eq(Hash)
@@ -130,7 +130,7 @@ module Decidim
         let!(:proposal) { create(:proposal, :participant_author, component:) }
 
         it "returns an array with 1 hash element" do
-          method_call = Contribution.proposal(proposal.reference)
+          method_call = Contribution.proposal(proposal.reference, "en")
           expect(method_call.class).to eq(Hash)
           expect(method_call.size).to eq(10)
           expect(method_call[:reference]).to eq(proposal.reference)

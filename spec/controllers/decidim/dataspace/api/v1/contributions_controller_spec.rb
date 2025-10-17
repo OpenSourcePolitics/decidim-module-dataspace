@@ -17,7 +17,7 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to include("application/json")
         expect { response.parsed_body }.not_to raise_error
-        expect(response.parsed_body["contributions"].size).to eq(3)
+        expect(response.parsed_body.size).to eq(3)
       end
     end
 

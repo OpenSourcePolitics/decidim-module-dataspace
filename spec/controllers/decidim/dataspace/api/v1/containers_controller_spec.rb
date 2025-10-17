@@ -6,7 +6,7 @@ describe Decidim::Dataspace::Api::V1::ContainersController do
   routes { Decidim::Dataspace::Engine.routes }
 
   describe "index" do
-    context "when there are containers" do
+    context "when there are proposals and containers" do
       let(:component) { create(:proposal_component) }
       let!(:proposal) { create(:proposal, component:) }
       let!(:proposal_two) { create(:proposal, component:) }
@@ -23,11 +23,11 @@ describe Decidim::Dataspace::Api::V1::ContainersController do
 
       it "returns all containers" do
         # proposals are created from participatory_process
-        expect(response.parsed_body["containers"].size).to eq(1)
+        expect(response.parsed_body.size).to eq(1)
       end
     end
 
-    context "when there are no containers" do
+    context "when there are no proposals and so no containers" do
       it "is a not_found and returns json without authors" do
         get :index
         expect(response).to have_http_status(:not_found)

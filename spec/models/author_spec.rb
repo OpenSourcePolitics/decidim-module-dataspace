@@ -53,9 +53,9 @@ module Decidim
         let!(:proposal_three) { create(:proposal, :official, component:) }
 
         it "returns an array with 3 hash elements" do
-          expect(Author.from_proposals.class).to eq(Array)
-          expect(Author.from_proposals.size).to eq(3)
-          expect(Author.from_proposals.first.class).to eq(Hash)
+          expect(Author.from_proposals("en").class).to eq(Array)
+          expect(Author.from_proposals("en").size).to eq(3)
+          expect(Author.from_proposals("en").first.class).to eq(Hash)
         end
       end
 
@@ -67,9 +67,9 @@ module Decidim
 
           it "returns a hash with author name as reference" do
             # for user author, the reference is the name
-            expect(Author.proposal_author(author.name).class).to eq(Hash)
-            expect(Author.proposal_author(author.name).size).to eq(3)
-            expect(Author.proposal_author(author.name)[:reference]).to eq(proposal.authors.first.name)
+            expect(Author.proposal_author(author.name, "en").class).to eq(Hash)
+            expect(Author.proposal_author(author.name, "en").size).to eq(3)
+            expect(Author.proposal_author(author.name, "en")[:reference]).to eq(proposal.authors.first.name)
           end
         end
 
@@ -80,9 +80,9 @@ module Decidim
 
           it "returns a hash with organization reference_prefix as reference" do
             # for official author, the reference is the reference_prefix
-            expect(Author.proposal_author(author.reference_prefix).class).to eq(Hash)
-            expect(Author.proposal_author(author.reference_prefix).size).to eq(3)
-            expect(Author.proposal_author(author.reference_prefix)[:reference]).to eq(proposal.authors.first.reference_prefix)
+            expect(Author.proposal_author(author.reference_prefix, "en").class).to eq(Hash)
+            expect(Author.proposal_author(author.reference_prefix, "en").size).to eq(3)
+            expect(Author.proposal_author(author.reference_prefix, "en")[:reference]).to eq(proposal.authors.first.reference_prefix)
           end
         end
 
@@ -93,9 +93,9 @@ module Decidim
 
           it "returns a hash with organization reference_prefix as reference" do
             # for official_meeting author, the reference is the reference
-            expect(Author.proposal_author(author.reference).class).to eq(Hash)
-            expect(Author.proposal_author(author.reference).size).to eq(3)
-            expect(Author.proposal_author(author.reference)[:reference]).to eq(proposal.authors.first.reference)
+            expect(Author.proposal_author(author.reference, "en").class).to eq(Hash)
+            expect(Author.proposal_author(author.reference, "en").size).to eq(3)
+            expect(Author.proposal_author(author.reference, "en")[:reference]).to eq(proposal.authors.first.reference)
           end
         end
       end
