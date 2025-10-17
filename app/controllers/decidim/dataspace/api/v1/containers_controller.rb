@@ -6,9 +6,11 @@ module Decidim
       before_action :set_container, only: :show
 
       def index
-        return resource_not_found("Containers") if Container.from_proposals.blank?
+        preferred_locale = params["preferred_locale"] || "en"
+        containers = Container.from_proposals(preferred_locale)
+        return resource_not_found("Containers") if containers.blank?
 
-        render json: { containers: Container.from_proposals }, status: :ok
+        render json: containers, status: :ok
       end
 
       def show
@@ -16,7 +18,9 @@ module Decidim
       end
 
       def set_container
-        @container = Container.from_params(params[:reference])
+        ref = CGI.unescape(params[:reference])
+        preferred_locale = params["preferred_locale"] || "en"
+        @container = Container.from_params(ref, preferred_locale)
         return resource_not_found("Container") unless @container
 
         @container

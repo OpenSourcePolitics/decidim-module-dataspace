@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'uri'
 
 module Decidim
   module Dataspace
@@ -6,9 +7,11 @@ module Decidim
       before_action :set_contribution, only: :show
 
       def index
-        return resource_not_found("Contributions") if Contribution.from_proposals.blank?
+        preferred_locale = params[:preferred_locale].presence || "en"
+        contributions = Contribution.from_proposals(preferred_locale)
+        return resource_not_found("Contributions") if contributions.blank?
 
-        render json: { contributions: Contribution.from_proposals }, status: :ok
+        render json: contributions, status: :ok
       end
 
       def show
@@ -18,7 +21,9 @@ module Decidim
       private
 
       def set_contribution
-        @contribution = Contribution.proposal(params[:reference])
+        ref = CGI.unescape(params[:reference])
+        preferred_locale = params[:preferred_locale].presence || "en"
+        @contribution = Contribution.proposal(ref, preferred_locale)
         return resource_not_found("Contribution") unless @contribution
 
         @contribution
