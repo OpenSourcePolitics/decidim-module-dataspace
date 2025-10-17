@@ -17,18 +17,23 @@ module Decidim
 
       delegate :reference, :source, :metadata, :created_at, :updated_at, :deleted_at, to: :interoperable
 
-      def self.from_proposals
-        Decidim::Proposals::Proposal.published
-                                    .not_hidden
-                                    .only_amendables
-                                    .includes(:component).all.map do |proposal|
+      def self.from_proposals(preferred_locale)
+        proposals = Decidim::Proposals::Proposal.published
+                                                .not_hidden
+                                                .only_amendables
+                                                .includes(:component)
+        locale = "en"
+        available_locales = proposals.first&.organization&.available_locales
+        locale = preferred_locale if available_locales.present? && available_locales.include?(preferred_locale)
+
+        proposals.all.map do |proposal|
           {
             reference: proposal.reference,
             source: Decidim::ResourceLocatorPresenter.new(proposal).url,
             container: proposal.component.participatory_space_type.constantize.find(proposal.component.participatory_space_id).reference,
-            locale: "en",
-            title: proposal.title["en"],
-            content: proposal.body["en"],
+            locale: locale,
+            title: proposal.title[locale],
+            content: proposal.body[locale],
             authors: Contribution.authors(proposal),
             created_at: proposal.created_at,
             updated_at: proposal.updated_at,
@@ -37,17 +42,19 @@ module Decidim
         end
       end
 
-      def self.proposal(params_reference)
+      def self.proposal(params_reference, preferred_locale)
         proposal = Decidim::Proposals::Proposal.find_by(reference: params_reference)
         return nil unless proposal
 
+        available_locales = proposal.organization.available_locales
+        locale = available_locales.include?(preferred_locale) ? preferred_locale : "en"
         {
           reference: proposal.reference,
           source: Decidim::ResourceLocatorPresenter.new(proposal).url,
           container: proposal.component.participatory_space_type.constantize.find(proposal.component.participatory_space_id).reference,
-          locale: "en",
-          title: proposal.title["en"],
-          content: proposal.body["en"],
+          locale: locale,
+          title: proposal.title[locale],
+          content: proposal.body[locale],
           authors: Contribution.authors(proposal),
           created_at: proposal.created_at,
           updated_at: proposal.updated_at,
