@@ -1,0 +1,42 @@
+<% add_decidim_meta_tags({
+                           description: @external_proposal["content"],
+                           title: @external_proposal["title"],
+                           url: @external_proposal["source"]
+                         }) %>
+
+<% append_stylesheet_pack_tag "decidim_proposals", media: "all" %>
+<% append_javascript_pack_tag "decidim_proposals" %>
+
+<%= render layout: "layouts/decidim/shared/layout_item", locals: { back_path: component_settings.participatory_texts_enabled? ? main_component_path(current_component) : proposals_path } do %>
+
+  <section class="layout-main__section layout-main__heading">
+    <%= render partial: "voting_rules" %>
+      <h1 class="h2 decorator"><%= @external_proposal["title"] %></h1>
+      <div class="layout-author">
+        <div class="author__avatar-container">
+          <img alt="default avatar" class="author__avatar" src="<%= asset_pack_path("media/images/default-avatar.svg") %>">
+        </div>
+        <p class="author_name"><%= @authors %></p>
+      </div>
+  </section>
+
+  <section class="layout-main__section">
+      <div class="editor-content">
+        <%= decidim_sanitize_editor(@external_proposal["content"]) %>
+      </div>
+  </section>
+
+  <%#= render partial: "actions" %>
+  <!-- some content of partial "actions" -->
+  <section class="layout-main__section layout-main__buttons" data-buttons>
+    <%= cell "decidim/comments_button", nil %>
+  </section>
+  <% if @comments.present? %>
+    <% append_stylesheet_pack_tag "decidim_comments" %>
+    <% append_javascript_pack_tag "decidim_comments", defer: false %>
+    <%= content_tag :div, id: "comments-for-#{@external_proposal[:reference]}", class: "mt-8" do %>
+      <%= render partial: "comments", locals: { parent_comments: @parent_comments, comments: @comments } %>
+    <% end %>
+  <% end %>
+<% end %>
+

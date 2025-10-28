@@ -1,0 +1,3 @@
+<div class="comment-thread" role="region" aria-label="<%= t("accessibility_label", scope: "decidim.comments.comment_thread", full_name: comment["authors"], date: l(comment["created_at"].to_date, format: :decidim_short)) %>">
+  <%= render partial: "comment", locals: { comment: comment, comment_ref: comment["reference"], comments: comments } %>
+</div>

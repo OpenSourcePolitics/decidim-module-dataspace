@@ -1,0 +1,3 @@
+<% comment_replies.each do |reply| %>
+  <%= render partial: "comment", locals: { comment: reply, comment_ref: reply["reference"], comments: comments } %>
+<% end %>
