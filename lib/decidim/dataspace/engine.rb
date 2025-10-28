@@ -27,6 +27,18 @@ module Decidim
         end
       end
 
+      initializer "decidim_dataspace.mount_routes", before: :add_routing_paths do
+        # Mount the engine routes to Decidim::Core::Engine because otherwise
+        # they would not get mounted properly.
+        Decidim::Proposals::Engine.routes.append do
+          resources :proposals do
+            collection do
+              get "external_proposal/:reference", to: "proposals#external_proposal", param: :reference, as: :external_proposal
+            end
+          end
+        end
+      end
+
       initializer "dataspace-extends" do
         config.after_initialize do
           require "extends/controllers/decidim/proposals/proposals_controller_extends"

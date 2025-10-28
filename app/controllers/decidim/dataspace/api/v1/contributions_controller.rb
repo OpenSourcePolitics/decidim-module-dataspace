@@ -9,7 +9,8 @@ module Decidim
 
       def index
         preferred_locale = params[:preferred_locale].presence || "en"
-        contributions = Contribution.from_proposals(preferred_locale)
+        with_comments = params[:with_comments].presence
+        contributions = Contribution.from_proposals(preferred_locale, with_comments)
         return resource_not_found("Contributions") if contributions.blank?
 
         render json: contributions, status: :ok
@@ -24,7 +25,8 @@ module Decidim
       def set_contribution
         ref = CGI.unescape(params[:reference])
         preferred_locale = params[:preferred_locale].presence || "en"
-        @contribution = Contribution.proposal(ref, preferred_locale)
+        with_comments = params[:with_comments].presence
+        @contribution = Contribution.proposal(ref, preferred_locale, with_comments)
         return resource_not_found("Contribution") unless @contribution
 
         @contribution

@@ -16,9 +16,7 @@ module ProposalsControllerExtends
                                                  .order(position: :asc)
         render "decidim/proposals/proposals/participatory_texts/participatory_text"
       else
-        if component_settings.add_integration &&
-           component_settings.integration_url.present? &&
-           data ||= GetDataFromApi.data(component_settings.integration_url, component_settings.preferred_locale || "en").presence
+        if component_settings.add_integration && component_settings.integration_url.present? && data
 
           external_proposals = data["contributions"]
           @platform = component_settings.integration_url.split("//")[1]
@@ -43,6 +41,17 @@ module ProposalsControllerExtends
       end
     end
 
+    def external_proposal
+      @external_proposal = GetDataFromApi.contribution(component_settings.integration_url, params[:reference], component_settings.preferred_locale || "en", "true")
+      return if @external_proposal.nil?
+
+      @comments = @external_proposal["children"]
+      @parent_comments = @comments.select { |comment| comment["parent"] == @external_proposal["reference"] } if @comments
+      @authors = GetDataFromApi.authors(component_settings.integration_url, component_settings.preferred_locale || "en")
+                               .select { |author| @external_proposal["authors"].include?(author["reference"]) }
+                               .map { |author| author["name"] }.join(", ")
+    end
+
     private
 
     def voted_proposals
@@ -54,6 +63,10 @@ module ProposalsControllerExtends
       else
         []
       end
+    end
+
+    def data
+      @data ||= GetDataFromApi.data(component_settings.integration_url, component_settings.preferred_locale || "en").presence
     end
 
     def define_proposals_and_external_proposals(proposals, external_proposals, current_page, per_page)

@@ -44,9 +44,9 @@ class GetDataFromApi
     end
   end
 
-  def self.contribution(url, ref, preferred_locale)
+  def self.contribution(url, ref, preferred_locale, with_comments = "false")
     ref = CGI.escape(ref)
-    uri = URI(url + "/api/v1/data/contributions/#{ref}?preferred_locale=#{preferred_locale}")
+    uri = URI(url + "/api/v1/data/contributions/#{ref}?preferred_locale=#{preferred_locale}&with_comments=#{with_comments}")
     begin
       result = Net::HTTP.get(uri)
       JSON.parse(result)
