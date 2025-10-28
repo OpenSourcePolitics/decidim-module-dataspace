@@ -174,6 +174,106 @@ module Decidim
         end
       end
 
+      describe "GET external_proposal" do
+        let(:component) { create(:proposal_component) }
+        let(:json_contrib) do
+          {
+            "reference" => "JD-PROP-2025-09-1",
+            "source" => "http://localhost:3000/processes/satisfaction-hope/f/7/proposals/1",
+            "container" => "JD-PART-2025-09-1",
+            "locale" => "en",
+            "title" => "Quia sapiente.",
+            "content" => "Debitis repellat provident. Earum dolorem eaque. Aut quia officiis.\nAsperiores cupiditate accusantium. Esse rerum quia. Atque et distinctio.",
+            "authors" => [
+              "JD-MEET-2025-09-23"
+            ],
+            "parent" => nil,
+            "children" => [
+              {
+                "reference" => "JD-PROP-2025-09-1-249",
+                "source" => "http://localhost:3000/processes/satisfaction-hope/f/7/proposals/1",
+                "container" => "JD-PART-2025-09-1",
+                "locale" => "en",
+                "title" => nil,
+                "content" => "Cumque hic quia veniam et dolores aliquam commodi laudantium omnis expedita enim natus et beatae quidem dolores architecto repudiandae rem a corporis impedit rerum fugit neque eos dicta deserunt consequatur numquam magnam voluptate inventore omnis aut porro nemo voluptas sit quia saepe aut provident accusantium voluptatem illum nam quaerat molestiae.",
+                "authors" => "Kautzer-Mayer",
+                "parent" => "JD-PROP-2025-09-1",
+                "children" => [
+                  "JD-PROP-2025-09-1-250"
+                ],
+                "metadata" => {
+                  "depth" => 0
+                },
+                "created_at" => "2025-09-11T10:20:23.609Z",
+                "updated_at" => "2025-09-11T10:20:23.609Z",
+                "deleted_at" => nil
+              },
+              {
+                "reference" => "JD-PROP-2025-09-1-250",
+                "source" => "http://localhost:3000/processes/satisfaction-hope/f/7/proposals/1",
+                "container" => "JD-PART-2025-09-1",
+                "locale" => "en",
+                "title" => nil,
+                "content" => "Voluptatem illum sit eius eligendi omnis dolore qui alias et occaecati eos ipsum blanditiis unde fugit minus est quia excepturi eos ut nam iste molestias cupiditate et vel repellat quidem qui non est porro commodi quia mollitia reiciendis odit rem voluptas tempora autem et sequi quos provident accusantium fugiat accusamus.",
+                "authors" => "Aldo Davis",
+                "parent" => "JD-PROP-2025-09-1-249",
+                "children" => nil,
+                "metadata" => {
+                  "depth" => 1
+                },
+                "created_at" => "2025-09-11T10:20:24.655Z",
+                "updated_at" => "2025-09-11T10:20:24.655Z",
+                "deleted_at" => nil
+              }
+            ],
+            "created_at" => "2025-09-11T10:20:21.222Z",
+            "updated_at" => "2025-09-11T10:21:56.604Z",
+            "deleted_at" => nil
+          }
+        end
+
+        let(:authors) do
+          [
+            {
+              "reference" => "JD-MEET-2025-09-23",
+              "name" => "Et natus.",
+              "source" => "http://localhost:3000/assemblies/smile-trivial/f/23/meetings/23"
+            },
+            {
+              "reference" => "Aldo Davis",
+              "name" => "Aldo Davis",
+              "source" => nil
+            },
+            {
+              "reference" => "Kautzer-Mayer",
+              "name" => "Kautzer-Mayer",
+              "source" => nil
+            },
+            {
+              "reference" => "JD",
+              "name" => "Gislason LLC",
+              "source" => nil
+            }
+          ]
+        end
+
+        before do
+          component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
+          allow(GetDataFromApi).to receive(:contribution).and_return(json_contrib)
+          allow(GetDataFromApi).to receive(:authors).and_return(authors)
+        end
+
+        it "displays external_proposal view and sets variables" do
+          get :external_proposal, params: { reference: "JD-PROP-2025-09-1", param: :reference }
+          expect(response).to have_http_status(:ok)
+          expect(subject).to render_template(:external_proposal)
+          expect(assigns(:external_proposal)).to eq json_contrib
+          expect(assigns(:comments)).to eq json_contrib["children"]
+          expect(assigns(:parent_comments)).to eq(json_contrib["children"].select { |comment| comment["parent"] == json_contrib["reference"] })
+          expect(assigns(:authors)).to eq "Et natus."
+        end
+      end
+
       describe "GET new" do
         let(:component) { create(:proposal_component, :with_creation_enabled) }
 
