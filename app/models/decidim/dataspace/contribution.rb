@@ -63,6 +63,7 @@ module Decidim
               authors: Contribution.authors(proposal),
               parent: nil,
               children: comments.map { |comment| comment[:reference] },
+              metadata: { state: { withdrawn: proposal.withdrawn?, emendation: proposal.emendation?, state: proposal.state } },
               created_at: proposal.created_at,
               updated_at: proposal.updated_at,
               deleted_at: nil # does not exist in proposal
@@ -84,6 +85,7 @@ module Decidim
           authors: Contribution.authors(proposal),
           parent: nil,
           children: proposal.comments.map { |comment| "#{proposal.reference}-#{comment.id}" },
+          metadata: { state: { withdrawn: proposal.withdrawn?, emendation: proposal.emendation?, state: proposal.state } },
           created_at: proposal.created_at,
           updated_at: proposal.updated_at,
           deleted_at: nil # does not exist in proposal
@@ -138,6 +140,7 @@ module Decidim
           authors: Contribution.authors(proposal),
           parent: nil,
           children: Contribution.comments(proposal, locale),
+          metadata: { state: { withdrawn: proposal.withdrawn?, emendation: proposal.emendation?, state: proposal.state } },
           created_at: proposal.created_at,
           updated_at: proposal.updated_at,
           deleted_at: nil
