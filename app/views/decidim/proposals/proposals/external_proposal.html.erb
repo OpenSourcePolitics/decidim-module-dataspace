@@ -17,6 +17,9 @@
           <img alt="default avatar" class="author__avatar" src="<%= asset_pack_path("media/images/default-avatar.svg") %>">
         </div>
         <p class="author_name"><%= @authors %></p>
+        <% if @external_proposal["metadata"]["state"]["state"].present? %>
+          <%= external_state_item(@external_proposal["metadata"]["state"]) %>
+        <% end %>
       </div>
   </section>
 

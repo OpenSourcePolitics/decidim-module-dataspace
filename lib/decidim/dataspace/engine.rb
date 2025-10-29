@@ -45,6 +45,15 @@ module Decidim
         end
       end
 
+      initializer "decidim_dataspace.add_customizations" do
+        config.to_prepare do
+          # Helper
+          Decidim::Proposals::ProposalsHelper.class_eval do
+            include Decidim::Proposals::ExternalProposalHelper
+          end
+        end
+      end
+
       initializer "dataspace.mount_routes" do
         Decidim::Core::Engine.routes do
           mount Decidim::Dataspace::Engine => "/"

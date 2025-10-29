@@ -6,7 +6,12 @@
         <p class="card__grid-img-text"><%= t('.view_from', platform: @platform) %></p>
     </div>
     <div class="card__grid-text">
-      <%= content_tag :h4, external_proposal["title"], class: "h4 text-secondary" %>
+      <div class="card__grid-text-title">
+        <%= content_tag :h4, external_proposal["title"], class: "h4 text-secondary" %>
+        <% if external_proposal["metadata"]["state"]["state"].present? %>
+          <%= external_state_item(external_proposal["metadata"]["state"]) %>
+        <% end %>
+      </div>
     </div>
     <div class="card__list-metadata">
       <div class="card__grid-author">
