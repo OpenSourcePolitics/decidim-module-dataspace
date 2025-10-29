@@ -155,8 +155,8 @@ module Decidim
           it "returns an array with 1 hash element and no detailed comments in children key" do
             method_call = Contribution.proposal(proposal.reference, "en")
             expect(method_call.class).to eq(Hash)
-            # we have 12 keys in the returned hash
-            expect(method_call.size).to eq(12)
+            # we have 13 keys in the returned hash
+            expect(method_call.size).to eq(13)
             expect(method_call[:reference]).to eq(proposal.reference)
             # reference for user author is name
             expect(method_call[:authors]).to eq([proposal.authors.first.name])
@@ -172,8 +172,8 @@ module Decidim
           it "returns an array with 1 hash element and detailed comments in children key" do
             method_call = Contribution.proposal(proposal.reference, "en", "true")
             expect(method_call.class).to eq(Hash)
-            # we have 12 keys in the returned hash
-            expect(method_call.size).to eq(12)
+            # we have 13 keys in the returned hash
+            expect(method_call.size).to eq(13)
             expect(method_call[:reference]).to eq(proposal.reference)
             # reference for user author is name
             expect(method_call[:authors]).to eq([proposal.authors.first.name])

@@ -56,6 +56,13 @@ describe "Proposals external proposal" do
         ],
         "parent" => nil,
         "children" => nil,
+        "metadata" => {
+          "state" => {
+            "withdrawn" => false,
+            "emendation" => false,
+            "state" => "accepted"
+          }
+        },
         "created_at" => "2025-09-11T10:20:21.222Z",
         "updated_at" => "2025-09-11T10:21:56.604Z",
         "deleted_at" => nil
@@ -66,6 +73,9 @@ describe "Proposals external proposal" do
       expect(page).to have_css("h1", text: "Quia sapiente.")
       expect(page).to have_css("p.author_name", text: "Aldo Davis")
       expect(page).to have_css("div.rich-text-display", text: json_contrib["content"])
+      # check status is displayed
+      expect(page).to have_content("Accepted")
+      # check there is no comments
       expect(page).to have_no_css("div#comments")
     end
   end
@@ -121,6 +131,13 @@ describe "Proposals external proposal" do
             "deleted_at" => nil
           }
         ],
+        "metadata" => {
+          "state" => {
+            "withdrawn" => false,
+            "emendation" => false,
+            "state" => nil
+          }
+        },
         "created_at" => "2025-09-11T10:20:21.222Z",
         "updated_at" => "2025-09-11T10:21:56.604Z",
         "deleted_at" => nil
@@ -131,6 +148,7 @@ describe "Proposals external proposal" do
       expect(page).to have_css("h1", text: "Quia sapiente.")
       expect(page).to have_css("p.author_name", text: "Aldo Davis")
       expect(page).to have_css("div.rich-text-display", text: json_contrib["content"])
+      # check comments are displayed
       expect(page).to have_css("div#comments")
       expect(page).to have_css("span.comments-count", text: "2 comments")
       within "div.comment-thread" do
