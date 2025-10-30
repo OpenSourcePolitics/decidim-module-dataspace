@@ -9,6 +9,7 @@ gem "decidim-dataspace", path: "."
 
 gem "bootsnap", "~> 1.4"
 gem "puma", ">= 6.3.1"
+gem "uri", ">= 1.0.4"
 
 group :development, :test do
   gem "byebug", "~> 11.0", platform: :mri

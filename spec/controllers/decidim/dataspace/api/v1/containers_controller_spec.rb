@@ -6,9 +6,10 @@ describe Decidim::Dataspace::Api::V1::ContainersController do
   routes { Decidim::Dataspace::Engine.routes }
 
   describe "index" do
-    context "when there are containers" do
-      let!(:container) { create(:container) }
-      let!(:container_two) { create(:container, reference: "B02", source: "https://example-container.com/") }
+    context "when there are proposals and containers" do
+      let(:component) { create(:proposal_component) }
+      let!(:proposal) { create(:proposal, component:) }
+      let!(:proposal_two) { create(:proposal, component:) }
 
       before do
         get :index
@@ -21,41 +22,29 @@ describe Decidim::Dataspace::Api::V1::ContainersController do
       end
 
       it "returns all containers" do
-        expect(response.parsed_body).to eq({ "containers" => [{ "reference" => container.reference,
-                                                                "source" => container.source,
-                                                                "name" => container.name,
-                                                                "description" => container.description,
-                                                                "metadata" => container.metadata,
-                                                                "created_at" => container.created_at.as_json,
-                                                                "updated_at" => container.updated_at.as_json,
-                                                                "deleted_at" => container.deleted_at }, # deleted_at is nil
-                                                              { "reference" => container_two.reference,
-                                                                "source" => container_two.source,
-                                                                "name" => container_two.name,
-                                                                "description" => container_two.description,
-                                                                "metadata" => container_two.metadata,
-                                                                "created_at" => container_two.created_at.as_json,
-                                                                "updated_at" => container_two.updated_at.as_json,
-                                                                "deleted_at" => container_two.deleted_at }] })
+        # proposals are created from participatory_process
+        expect(response.parsed_body.size).to eq(1)
       end
     end
 
-    context "when there are no containers" do
-      it "is a success and returns json without containers" do
+    context "when there are no proposals and so no containers" do
+      it "is a not_found and returns json without authors" do
         get :index
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:not_found)
         expect(response.content_type).to include("application/json")
-        expect(response.parsed_body["containers"].size).to eq(0)
+        expect(response.parsed_body).to eq({ "error" => "Containers not found" })
       end
     end
   end
 
   describe "show" do
     context "when container exists" do
-      let!(:container) { create(:container) }
+      let(:component) { create(:proposal_component) }
+      let(:proposal) { create(:proposal, component:) }
+      let!(:container) { proposal.component.participatory_space_type.constantize.find(proposal.component.participatory_space_id) }
 
       before do
-        get :show, params: { reference: "B01" }
+        get :show, params: { reference: container.reference }
       end
 
       it "is a success and returns json" do
@@ -65,16 +54,10 @@ describe Decidim::Dataspace::Api::V1::ContainersController do
       end
 
       it "returns the container" do
-        expect(response.parsed_body).to eq({
-                                             "reference" => container.reference,
-                                             "source" => container.source,
-                                             "name" => container.name,
-                                             "description" => container.description,
-                                             "metadata" => container.metadata,
-                                             "created_at" => container.created_at.as_json,
-                                             "updated_at" => container.updated_at.as_json,
-                                             "deleted_at" => container.deleted_at
-                                           })
+        expect(response.parsed_body["reference"]).to eq(container.reference)
+        expect(response.parsed_body["source"]).to eq(Decidim::ResourceLocatorPresenter.new(container).url)
+        expect(response.parsed_body["name"]).to eq(container.title["en"])
+        expect(response.parsed_body["description"]).to eq(container.description["en"])
       end
     end
 

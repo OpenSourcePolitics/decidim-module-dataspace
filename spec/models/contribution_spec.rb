@@ -110,6 +110,81 @@ module Decidim
           expect { contribution.destroy }.to change(Decidim::Dataspace::Interoperable, :count).by(-1)
         end
       end
+
+      context "when using self.from_proposals method with 3 proposals and 2 comments" do
+        let(:component) { create(:proposal_component) }
+        let!(:proposal) { create(:proposal, component:) }
+        let!(:comment_one) { create(:comment, commentable: proposal) }
+        let!(:comment_two) { create(:comment, commentable: proposal) }
+        let!(:proposal_two) { create(:proposal, component:) }
+        let!(:proposal_three) { create(:proposal, component:) }
+
+        context "and with_comments is false" do
+          it "returns an array with 3 hash proposals elements" do
+            method_call = Contribution.from_proposals("en")
+            expect(method_call.class).to eq(Array)
+            expect(method_call.size).to eq(3)
+            expect(method_call.first.class).to eq(Hash)
+            expect(method_call.first[:children].size).to eq(2)
+          end
+        end
+
+        context "and with_comments is true" do
+          it "returns an array with 5 proposals+comments hash elements" do
+            method_call = Contribution.from_proposals("en", "true")
+            expect(method_call.class).to eq(Array)
+            expect(method_call.size).to eq(5)
+            expect(method_call.first.class).to eq(Hash)
+            # first is proposal and has 2 children
+            expect(method_call.first[:children].size).to eq(2)
+            # second will be the first comment of proposal
+            expect(method_call.second[:reference]).to eq("#{method_call.first[:reference]}-#{comment_one.id}")
+            # last is proposal_three and has no children
+            expect(method_call.last[:children]).to eq([])
+          end
+        end
+      end
+
+      context "when using self.proposal method" do
+        let(:component) { create(:proposal_component) }
+        let!(:proposal) { create(:proposal, :participant_author, component:) }
+        let!(:comment_one) { create(:comment, commentable: proposal) }
+        let!(:comment_two) { create(:comment, commentable: proposal) }
+
+        context "and with_comments is false" do
+          it "returns an array with 1 hash element and no detailed comments in children key" do
+            method_call = Contribution.proposal(proposal.reference, "en")
+            expect(method_call.class).to eq(Hash)
+            # we have 13 keys in the returned hash
+            expect(method_call.size).to eq(13)
+            expect(method_call[:reference]).to eq(proposal.reference)
+            # reference for user author is name
+            expect(method_call[:authors]).to eq([proposal.authors.first.name])
+            # proposal has 2 comments
+            expect(method_call[:children].size).to eq(2)
+            # comments are not detailed
+            expect(method_call[:children].first.class).to eq(String)
+            expect(method_call[:children].first).to eq("#{method_call[:reference]}-#{comment_one.id}")
+          end
+        end
+
+        context "and with_comments is true" do
+          it "returns an array with 1 hash element and detailed comments in children key" do
+            method_call = Contribution.proposal(proposal.reference, "en", "true")
+            expect(method_call.class).to eq(Hash)
+            # we have 13 keys in the returned hash
+            expect(method_call.size).to eq(13)
+            expect(method_call[:reference]).to eq(proposal.reference)
+            # reference for user author is name
+            expect(method_call[:authors]).to eq([proposal.authors.first.name])
+            # proposal has 2 comments
+            expect(method_call[:children].size).to eq(2)
+            # comments are detailed
+            expect(method_call[:children].first.class).to eq(Hash)
+            expect(method_call[:children].first[:reference]).to eq("#{method_call[:reference]}-#{comment_one.id}")
+          end
+        end
+      end
     end
   end
 end

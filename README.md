@@ -25,19 +25,25 @@ bundle exec rake db:migrate
 
 ## API endpoints
 + Retrieve all data from the data space\
-GET "/data"
+GET "api/v1/data"
 + Retrieve all containers from the data space\
-GET "/data/containers"
+GET "api/v1/data/containers"
 + Retrieve a container using its reference\
-GET "/data/containers/:reference"
+GET "api/v1/data/containers/:reference"
 + Retrieve all contributions from the data space\
-GET "/data/contributions"
+GET "api/v1/data/contributions"
 + Retrieve a contribution using its reference\
-GET "/data/contributions/:reference"
+GET "api/v1/data/contributions/:reference"
 + Retrieve all authors from the data space\
-GET "/data/authors"
+GET "api/v1/data/authors"
 + Retrieve an author using its reference\
-GET "/data/authors/:reference"
+GET "api/v1/data/authors/:reference"
+
+Please note that for the 2 endpoints related to contribution, you can add 2 query params
++ "preferred_locale=fr" to get the data with your favorite language (default is "en")
++ "with_comments=true" (default is false)
+  + for contributions endpoint, it will give you proposals and comments (the default is only proposals)
+  + for contribution endpoint, it will give you a proposal with detailed comments as children
 
 Please note that the reference is the last part of the URL and **needs to be URL encoded**
 

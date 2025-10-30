@@ -1,0 +1,18 @@
+<%= content_tag :div, id: "comment_#{comment_ref}", class: "comment relative", role: "comment", data: { comment_id: comment[:reference], parent: comment[:parent] }, root_depth: comment["metadata"]["depth"]  do %>
+  <div class="flex justify-start items-center">
+    <div class="author__avatar-container">
+      <img alt="default avatar" class="author__avatar" src="<%= asset_pack_path("media/images/default-avatar.svg") %>">
+    </div>
+    <h3 class="font-bold ml-2"><%= comment["authors"] %></h3>
+    <p class="italic ml-2"><%= l(comment["created_at"].to_datetime, format: :decidim_short) %></p>
+  </div>
+  <p><%= comment["content"] %></p>
+  <div data-comment-footer data-component="accordion" id="accordion-<%= comment_ref %>">
+    <div id="comment-<%= comment_ref %>-replies" class="<%= "comment-reply" if comment["children"].present? %>">
+      <% if comment["children"].present? %>
+        <%= render partial: "comment_replies", locals: { comment_replies: comments.select{|comm| comment["children"].include?(comm["reference"]) }, comments: comments } %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+

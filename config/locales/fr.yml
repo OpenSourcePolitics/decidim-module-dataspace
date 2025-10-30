@@ -1,5 +1,5 @@
 ---
-en:
+fr:
   decidim:
     components:
       dataspace:
@@ -7,9 +7,9 @@ en:
       proposals:
         settings:
           global:
-            add_integration: Add an integration
-            integration_url: Url platform to integrate
-            preferred_locale: Preferred language
+            add_integration: Ajouter une integration
+            integration_url: Url de la plateforme à intégrer
+            preferred_locale: Langue préférée
             preferred_locale_options:
               ca: ca
               cs: cs
@@ -28,4 +28,4 @@ en:
     proposals:
       proposals:
         external_proposal:
-          view_from: View from platform %{platform}
+          view_from: Vue de la plateforme %{platform}

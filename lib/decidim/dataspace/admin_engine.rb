@@ -19,6 +19,17 @@ module Decidim
         # root to: "dataspace#index"
       end
 
+      initializer "decidim-dataspace.add_proposal_component_settings" do
+        languages = Rails.application.secrets.dig(:decidim, :available_locales)
+        default_language = Rails.application.secrets.dig(:decidim, :default_locale)
+        manifest = Decidim.find_component_manifest("proposals")
+        manifest.settings(:global) do |settings|
+          settings.attribute :add_integration, type: :boolean, default: false
+          settings.attribute :integration_url, type: :string
+          settings.attribute :preferred_locale, type: :select, default: default_language, choices: languages
+        end
+      end
+
       def load_seed
         nil
       end

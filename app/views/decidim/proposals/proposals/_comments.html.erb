@@ -1,0 +1,21 @@
+<div id="comments">
+  <div class="comments">
+    <div class="comments__header">
+      <h2 class="h4">
+        <% if comments.count <= 1 %>
+          <%= t("decidim.components.comments.comment_details_title") %>
+        <% else %>
+          <%= icon "chat-1-line", class: "fill-tertiary w-6 h-6 inline-block align-middle" %>
+          <span class="comments-count inline-block align-middle">
+            <%= t("decidim.components.comments.title", count: comments.count) %>
+          </span>
+        <% end %>
+      </h2>
+    </div>
+    <div class="comment-threads" id="comments-for-#{@external_proposal[:reference]}-threads" aria-live="polite">
+      <% parent_comments.each do |parent_comment| %>
+        <%= render partial: "comment_thread", locals: { comment: parent_comment, comments: comments } %>
+      <% end %>
+    </div>
+  </div>
+</div>
