@@ -1,9 +1,9 @@
 <% if card_size == :g %>
 
-  <%= link_to external_proposal_proposals_path(external_proposal["reference"]), class: "card__grid-external", id: external_proposal["reference"] do %>
+  <%= link_to external_proposal_proposals_path(external_proposal["reference"], url: external_proposal["source"]), class: "card__grid-external", id: external_proposal["reference"] do %>
     <div class="card__grid-img">
         <%= external_icon "media/images/placeholder-card-g.svg", class: "card__placeholder-g" %>
-        <p class="card__grid-img-text"><%= t('.view_from', platform: @platform) %></p>
+        <p class="card__grid-img-text"><%= t('.view_from', platform: display_host(external_proposal["source"])) %></p>
     </div>
     <div class="card__grid-text">
       <div class="card__grid-text-title">

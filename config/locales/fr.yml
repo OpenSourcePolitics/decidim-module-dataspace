@@ -7,8 +7,8 @@ fr:
       proposals:
         settings:
           global:
-            add_integration: Ajouter une integration
-            integration_url: Url de la plateforme à intégrer
+            add_integration: Ajouter des integrations
+            integration_url: Url des plateformes à intégrer (séparées par une virgule)
             preferred_locale: Langue préférée
             preferred_locale_options:
               ca: ca
