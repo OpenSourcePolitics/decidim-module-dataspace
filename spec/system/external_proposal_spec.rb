@@ -36,7 +36,7 @@ describe "Proposals external proposal" do
   end
 
   before do
-    component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
+    component.update!(settings: { add_integration: true, integration_url: "http://localhost:3000", preferred_locale: "en" })
     allow(GetDataFromApi).to receive(:contribution).and_return(json_contrib)
     allow(GetDataFromApi).to receive(:authors).and_return(authors)
     visit_external_proposal
@@ -165,6 +165,6 @@ describe "Proposals external proposal" do
   end
 
   def visit_external_proposal
-    visit decidim_proposals.external_proposal_proposals_path("JD-PROP-2025-09-1")
+    visit decidim_proposals.external_proposal_proposals_path("JD-PROP-2025-09-1", url: "http://localhost:3000/processes/satisfaction-hope/f/7/proposals/1")
   end
 end

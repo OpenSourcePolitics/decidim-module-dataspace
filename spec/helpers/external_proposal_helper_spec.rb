@@ -70,6 +70,14 @@ module Decidim
           end
         end
       end
+
+      describe "display_host" do
+        let(:url) { "http://localhost:3000" }
+
+        it "returns the host" do
+          expect(helper.display_host(url)).to eq("localhost")
+        end
+      end
     end
   end
 end
