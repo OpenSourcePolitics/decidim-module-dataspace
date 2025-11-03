@@ -122,41 +122,63 @@ describe "Proposals" do
       before do
         create(:proposal_component, manifest:, participatory_space: participatory_process)
         create_list(:proposal, 3, component:)
-        component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
         allow(GetDataFromApi).to receive(:data).and_return(json)
       end
 
-      it "lists the proposals ordered randomly by default and the external proposals at the end" do
-        visit_component
-        # 5 cards
-        expect(page).to have_css("a[class='card__list']", count: 5)
-        # 3 proposals
-        expect(page).to have_css("[id^='proposals__proposal']", count: 3)
-        # 2 external proposals
-        expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 1)
-        expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 1)
-      end
-
-      context "and there are a lot of proposals" do
+      context "and there is one url in integration_url" do
         before do
-          # Decidim::Paginable::OPTIONS.first is 25
-          create_list(:proposal, Decidim::Paginable::OPTIONS.first, component:)
-          # we have already create 3 proposals, so we will have a total of 28 proposals
+          component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
         end
 
-        it "paginates them with proposals first and external proposals at the end" do
+        it "lists the proposals ordered randomly by default and the external proposals at the end" do
           visit_component
-          # only proposals on first page
-          expect(page).to have_css("a[class='card__list']", count: Decidim::Paginable::OPTIONS.first)
-          expect(page).to have_css("[id^='proposals__proposal']", count: Decidim::Paginable::OPTIONS.first)
-
-          click_on "Next"
-          # proposals and external proposals on second page
+          # 5 cards
           expect(page).to have_css("a[class='card__list']", count: 5)
-          expect(page).to have_css("[data-pages] [data-page][aria-current='page']", text: "2")
+          # 3 proposals
           expect(page).to have_css("[id^='proposals__proposal']", count: 3)
+          # 2 external proposals
           expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 1)
           expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 1)
+        end
+
+        context "and there are a lot of proposals" do
+          before do
+            # Decidim::Paginable::OPTIONS.first is 25
+            create_list(:proposal, Decidim::Paginable::OPTIONS.first, component:)
+            # we have already create 3 proposals, so we will have a total of 28 proposals
+          end
+
+          it "paginates them with proposals first and external proposals at the end" do
+            visit_component
+            # only proposals on first page
+            expect(page).to have_css("a[class='card__list']", count: Decidim::Paginable::OPTIONS.first)
+            expect(page).to have_css("[id^='proposals__proposal']", count: Decidim::Paginable::OPTIONS.first)
+
+            click_on "Next"
+            # proposals and external proposals on second page
+            expect(page).to have_css("a[class='card__list']", count: 5)
+            expect(page).to have_css("[data-pages] [data-page][aria-current='page']", text: "2")
+            expect(page).to have_css("[id^='proposals__proposal']", count: 3)
+            expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 1)
+            expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 1)
+          end
+        end
+      end
+
+      context "and there are 2 urls in integration_url" do
+        before do
+          component.update!(settings: { add_integration: true, integration_url: "http://example.org, http://example.org", preferred_locale: "en" })
+        end
+
+        it "returns the double amount of external proposals" do
+          visit_component
+          # 7 cards
+          expect(page).to have_css("a[class='card__list']", count: 7)
+          # 3 proposals
+          expect(page).to have_css("[id^='proposals__proposal']", count: 3)
+          # 4 external proposals
+          expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 2)
+          expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 2)
         end
       end
     end

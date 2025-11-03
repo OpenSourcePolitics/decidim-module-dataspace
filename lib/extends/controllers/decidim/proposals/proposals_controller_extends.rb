@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/concern"
+require "uri"
 
 module ProposalsControllerExtends
   extend ActiveSupport::Concern
@@ -16,10 +17,9 @@ module ProposalsControllerExtends
                                                  .order(position: :asc)
         render "decidim/proposals/proposals/participatory_texts/participatory_text"
       else
-        if component_settings.add_integration && component_settings.integration_url.present? && data
+        if component_settings.add_integration && component_settings.integration_url.present? && data.present?
 
           external_proposals = data["contributions"]
-          @platform = component_settings.integration_url.split("//")[1]
           @authors = data["authors"]
           proposals = search.result
           proposals = reorder(proposals.includes(:component, :coauthorships, :attachments))
@@ -42,12 +42,16 @@ module ProposalsControllerExtends
     end
 
     def external_proposal
-      @external_proposal = GetDataFromApi.contribution(component_settings.integration_url, params[:reference], component_settings.preferred_locale || "en", "true")
+      uri = URI.parse(params[:url])
+      url = "#{uri.scheme}://#{uri.host}"
+      url += ":3000" if uri.host == "localhost"
+
+      @external_proposal = GetDataFromApi.contribution(url, params[:reference], component_settings.preferred_locale || "en", "true")
       return if @external_proposal.nil?
 
       @comments = @external_proposal["children"]
       @parent_comments = @comments.select { |comment| comment["parent"] == @external_proposal["reference"] } if @comments
-      @authors = GetDataFromApi.authors(component_settings.integration_url, component_settings.preferred_locale || "en")
+      @authors = GetDataFromApi.authors(url, component_settings.preferred_locale || "en")
                                .select { |author| @external_proposal["authors"].include?(author["reference"]) }
                                .map { |author| author["name"] }.join(", ")
     end
@@ -66,7 +70,25 @@ module ProposalsControllerExtends
     end
 
     def data
-      @data ||= GetDataFromApi.data(component_settings.integration_url, component_settings.preferred_locale || "en").presence
+      @data ||= compile_data
+    end
+
+    def compile_data
+      data = {}
+      component_settings.integration_url.split(", ").each do |url|
+        url = url.strip
+        datum = GetDataFromApi.data(url, component_settings.preferred_locale || "en").presence
+        if datum
+          if data.has_key?("contributions")
+            data["contributions"].concat(datum["contributions"])
+            data["authors"].concat(datum["authors"])
+          else
+            data["contributions"] = datum["contributions"]
+            data["authors"] = datum["authors"]
+          end
+        end
+      end
+      data
     end
 
     def define_proposals_and_external_proposals(proposals, external_proposals, current_page, per_page)

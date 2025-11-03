@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "uri"
+
 module Decidim
   module Proposals
     module ExternalProposalHelper
@@ -41,6 +43,11 @@ module Decidim
         else
           ""
         end
+      end
+
+      def display_host(url)
+        uri = URI.parse(url)
+        uri.host
       end
     end
   end

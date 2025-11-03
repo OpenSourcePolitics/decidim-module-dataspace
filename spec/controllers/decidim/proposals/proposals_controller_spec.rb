@@ -111,28 +111,44 @@ module Decidim
               }
             end
 
-            before do
-              component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
-              allow(GetDataFromApi).to receive(:data).and_return(json)
+            context "and there is one url in integration url" do
+              before do
+                component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
+                allow(GetDataFromApi).to receive(:data).and_return(json)
+              end
+
+              it "sorts proposals by search defaults and define external_proposals and other variables" do
+                get :index
+                expect(response).to have_http_status(:ok)
+                expect(subject).to render_template(:index)
+                expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
+                expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+                expect(assigns(:authors).count).to eq 2
+                expect(assigns(:authors).first[:reference]).to eq "JD-MEET-2025-09-6"
+                expect(assigns(:authors).last[:reference]).to eq "JD-MEET-2025-09-23"
+                expect(assigns(:total_count)).to eq 4
+                expect(assigns(:current_page)).to eq 1
+                expect(assigns(:total_pages)).to eq 1
+                expect(assigns(:proposals).count).to eq 2
+                expect(assigns(:external_proposals).count).to eq 2
+                expect(assigns(:external_proposals).first[:reference]).to eq "JD-PROP-2025-09-1"
+                expect(assigns(:external_proposals).last[:reference]).to eq "JD-PROP-2025-09-20"
+              end
             end
 
-            it "sorts proposals by search defaults and define external_proposals and other variables" do
-              get :index
-              expect(response).to have_http_status(:ok)
-              expect(subject).to render_template(:index)
-              expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
-              expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
-              expect(assigns(:platform)).to eq "example.org"
-              expect(assigns(:authors).count).to eq 2
-              expect(assigns(:authors).first[:reference]).to eq "JD-MEET-2025-09-6"
-              expect(assigns(:authors).last[:reference]).to eq "JD-MEET-2025-09-23"
-              expect(assigns(:total_count)).to eq 4
-              expect(assigns(:current_page)).to eq 1
-              expect(assigns(:total_pages)).to eq 1
-              expect(assigns(:proposals).count).to eq 2
-              expect(assigns(:external_proposals).count).to eq 2
-              expect(assigns(:external_proposals).first[:reference]).to eq "JD-PROP-2025-09-1"
-              expect(assigns(:external_proposals).last[:reference]).to eq "JD-PROP-2025-09-20"
+            context "and there are 2 urls in integration_url" do
+              before do
+                component.update!(settings: { add_integration: true, integration_url: "http://example.org, http://example.org,", preferred_locale: "en" })
+                allow(GetDataFromApi).to receive(:data).and_return(json)
+              end
+
+              it "returns 4 external proposals and 4 authors" do
+                get :index
+                expect(response).to have_http_status(:ok)
+                expect(subject).to render_template(:index)
+                expect(assigns(:external_proposals).count).to eq 4
+                expect(assigns(:authors).count).to eq 4
+              end
             end
           end
 
@@ -264,7 +280,7 @@ module Decidim
         end
 
         it "displays external_proposal view and sets variables" do
-          get :external_proposal, params: { reference: "JD-PROP-2025-09-1", param: :reference }
+          get :external_proposal, params: { reference: "JD-PROP-2025-09-1", param: :reference, url: "http://example.org" }
           expect(response).to have_http_status(:ok)
           expect(subject).to render_template(:external_proposal)
           expect(assigns(:external_proposal)).to eq json_contrib
