@@ -8,7 +8,7 @@ en:
         settings:
           global:
             add_integration: Add integrations
-            integration_url: Url platforms to integrate (separated by a comma)
+            integration_url: "Url platforms to integrate, separated by a comma.<br><span class='font-normal'>If you want to get only proposals from one participatory space, you can add a container param in the url with the reference of the participatory space (ex: https://example.org?container=JD-ASSE-2025-09-1)</span>"
             preferred_locale: Preferred language
             preferred_locale_options:
               ca: ca
