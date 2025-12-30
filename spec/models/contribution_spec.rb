@@ -143,6 +143,19 @@ module Decidim
             expect(method_call.last[:children]).to eq([])
           end
         end
+
+        context "and there is a container" do
+          let(:component_two) { create(:proposal_component) }
+          let!(:proposal_four) { create(:proposal, :participant_author, component: component_two) }
+
+          it "returns the proposals filtered by container" do
+            method_call = Contribution.from_proposals("en", "false", component_two.participatory_space.reference)
+            expect(method_call.class).to eq(Array)
+            expect(method_call.size).to eq(1)
+            expect(method_call.first.class).to eq(Hash)
+            expect(method_call.first[:reference]).to eq(proposal_four.reference)
+          end
+        end
       end
 
       context "when using self.proposal method" do
