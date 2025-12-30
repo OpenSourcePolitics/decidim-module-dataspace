@@ -18,11 +18,13 @@ module Decidim
       delegate :reference, :source, :metadata, :created_at, :updated_at, :deleted_at, to: :interoperable
 
       # get all the proposals with or without comments
-      def self.from_proposals(preferred_locale, with_comments = "false")
+      def self.from_proposals(preferred_locale, with_comments = "false", container = nil)
         proposals = Decidim::Proposals::Proposal.published
                                                 .not_hidden
-                                                .only_amendables
                                                 .includes(:component)
+
+        proposals = Contribution.filter_proposals_by_container(container, proposals) if container
+
         locale = "en"
         available_locales = proposals.first&.organization&.available_locales
         locale = preferred_locale if available_locales.present? && available_locales.include?(preferred_locale)
@@ -158,6 +160,15 @@ module Decidim
             author.reference
           end
         end
+      end
+
+      def self.filter_proposals_by_container(container, proposals)
+        participatory_space = Decidim::ParticipatoryProcess.find_by(reference: container) || Decidim::Assembly.find_by(reference: container)
+        if participatory_space
+          component_ids = participatory_space.components.where(manifest_name: "proposals").ids
+          proposals = proposals.where(decidim_component_id: component_ids)
+        end
+        proposals
       end
 
       private
