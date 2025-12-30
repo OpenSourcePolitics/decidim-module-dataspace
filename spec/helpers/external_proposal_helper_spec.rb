@@ -78,6 +78,34 @@ module Decidim
           expect(helper.display_host(url)).to eq("localhost")
         end
       end
+
+      describe "alignment_badge_classes" do
+        context "when alignment is 1" do
+          it "returns a string with success" do
+            expect(helper.alignment_badge_classes(1)).to eq("label alignment success")
+          end
+        end
+
+        context "when alignment is -1" do
+          it "returns a string with alert" do
+            expect(helper.alignment_badge_classes(-1)).to eq("label alignment alert")
+          end
+        end
+      end
+
+      describe "alignment_badge_label" do
+        context "when alignment is 1" do
+          it "returns in favor" do
+            expect(helper.alignment_badge_label(1)).to eq("In favor")
+          end
+        end
+
+        context "when alignment is -1" do
+          it "returns against" do
+            expect(helper.alignment_badge_label(-1)).to eq("Against")
+          end
+        end
+      end
     end
   end
 end
