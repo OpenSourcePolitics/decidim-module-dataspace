@@ -49,6 +49,25 @@ module Decidim
         uri = URI.parse(url)
         uri.host
       end
+
+      def alignment_badge_classes(alignment)
+        classes = %w(label alignment)
+        case alignment
+        when 1
+          classes << "success"
+        when -1
+          classes << "alert"
+        end
+        classes.join(" ")
+      end
+
+      def alignment_badge_label(alignment)
+        if alignment == 1
+          I18n.t("decidim.components.comment.alignment.in_favor")
+        else
+          I18n.t("decidim.components.comment.alignment.against")
+        end
+      end
     end
   end
 end
