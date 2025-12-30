@@ -20,7 +20,7 @@ module Decidim
             scope :data do
               get "/", to: "data#index"
               resources :containers, only: [:index, :show], param: :reference
-              resources :authors, only: [:index, :show, :create], param: :reference
+              resources :authors, only: [:index, :show], param: :reference
               resources :contributions, only: [:index, :show], param: :reference
             end
           end
