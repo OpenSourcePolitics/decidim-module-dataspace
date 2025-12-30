@@ -106,7 +106,7 @@ module Decidim
             authors: comment.author.name,
             parent: Contribution.parent(comment, proposal),
             children: Contribution.children(comment, proposal),
-            metadata: { depth: comment.depth },
+            metadata: { depth: comment.depth, alignment: comment.alignment },
             created_at: comment.created_at,
             updated_at: comment.updated_at,
             deleted_at: comment.deleted_at
