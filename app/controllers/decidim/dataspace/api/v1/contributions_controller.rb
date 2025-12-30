@@ -9,8 +9,9 @@ module Decidim
 
       def index
         preferred_locale = params[:preferred_locale].presence || "en"
+        container = params[:container].presence
         with_comments = params[:with_comments].presence
-        contributions = Contribution.from_proposals(preferred_locale, with_comments)
+        contributions = Contribution.from_proposals(preferred_locale, with_comments, container)
         return resource_not_found("Contributions") if contributions.blank?
 
         render json: contributions, status: :ok
