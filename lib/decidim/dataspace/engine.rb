@@ -42,6 +42,8 @@ module Decidim
       initializer "dataspace-extends" do
         config.after_initialize do
           require "extends/controllers/decidim/proposals/proposals_controller_extends"
+          require "extends/models/decidim/comments/comment_extends"
+          require "extends/lib/decidim/core_extends"
         end
       end
 
