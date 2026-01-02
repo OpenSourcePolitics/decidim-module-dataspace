@@ -27,7 +27,7 @@ module Decidim
         ref = CGI.unescape(params[:reference])
         preferred_locale = params[:preferred_locale].presence || "en"
         with_comments = params[:with_comments].presence
-        @contribution = Contribution.proposal(ref, preferred_locale, with_comments)
+        @contribution = Contribution.get_one(ref, preferred_locale, with_comments)
         return resource_not_found("Contribution") unless @contribution
 
         @contribution
