@@ -33,8 +33,8 @@ module Decidim
           expect(method_call.size).to eq(13)
           expect(method_call[:reference]).to eq(proposal.reference)
           expect(method_call[:title]).to eq(translated_attribute(proposal.title))
-          expect(method_call[:children]).to include(Decidim::Dataspace::ContributionPresenter.new(comment_one).comment(proposal, component, locale))
-          expect(method_call[:children]).to include(Decidim::Dataspace::ContributionPresenter.new(comment_two).comment(proposal, component, locale))
+          expect(method_call[:children]).to include(Decidim::Dataspace::ContributionPresenter.new(comment_one).comment(proposal, component, locale).sort.to_h)
+          expect(method_call[:children]).to include(Decidim::Dataspace::ContributionPresenter.new(comment_two).comment(proposal, component, locale).sort.to_h)
         end
       end
 
