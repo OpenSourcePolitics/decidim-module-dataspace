@@ -21,6 +21,7 @@ bundle install
 # For versions >= 0.27
 bundle exec rake railties:install:migrations
 bundle exec rake db:migrate
+bundle exec rake comments:add_reference
 ```
 
 ## API endpoints
@@ -39,7 +40,7 @@ GET "api/v1/data/authors"
 + Retrieve an author using its reference\
 GET "api/v1/data/authors/:reference"
 
-Please note that for the data and the contributions endpoints, you can add a container query params
+Please note that for the data and the /contributions endpoints, you can add a container query params
 + "container=JD-PROP-2025-09-1" to get only the contributions from the specified container
 
 Please note that for the 2 endpoints related to contribution, you can also add 2 query params
