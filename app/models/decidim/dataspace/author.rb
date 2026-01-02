@@ -15,7 +15,6 @@ module Decidim
       def self.from_proposals(preferred_locale)
         proposals = Decidim::Proposals::Proposal.published
                                                 .not_hidden
-                                                .only_amendables
         locale = "en"
         available_locales = proposals.first&.organization&.available_locales
         locale = preferred_locale if available_locales.present? && available_locales.include?(preferred_locale)
