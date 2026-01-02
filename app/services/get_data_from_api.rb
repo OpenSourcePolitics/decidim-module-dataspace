@@ -22,7 +22,7 @@ class GetDataFromApi
   end
 
   def self.contributions(url, preferred_locale)
-    uri = URI(url + "/api/v1/contributions?preferred_locale=#{preferred_locale}")
+    uri = URI(url + "/api/v1/data/contributions?preferred_locale=#{preferred_locale}")
     if url.include?("?container")
       array = url.split("?")
       url = array.first
