@@ -92,7 +92,7 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
           # 2 comments without details
           expect(response.parsed_body["children"].size).to eq(2)
           expect(response.parsed_body["children"].first.class).to eq(String)
-          expect(response.parsed_body["children"].first).to eq("#{proposal["reference"]}-#{comment_one.id}")
+          expect(response.parsed_body["children"].first).to eq(comment_one.reference)
         end
       end
 
@@ -116,7 +116,7 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
           # 2 comments with details
           expect(response.parsed_body["children"].size).to eq(2)
           expect(response.parsed_body["children"].first.class).to eq(Hash)
-          expect(response.parsed_body["children"].first["reference"]).to eq("#{proposal["reference"]}-#{comment_one.id}")
+          expect(response.parsed_body["children"].first["reference"]).to eq(comment_one.reference)
           expect(response.parsed_body["children"].first["content"]).to eq(comment_one.body["en"])
         end
       end

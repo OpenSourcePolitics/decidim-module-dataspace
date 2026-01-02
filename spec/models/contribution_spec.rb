@@ -138,7 +138,7 @@ module Decidim
             # first is proposal and has 2 children
             expect(method_call.first[:children].size).to eq(2)
             # second will be the first comment of proposal
-            expect(method_call.second[:reference]).to eq("#{method_call.first[:reference]}-#{comment_one.id}")
+            expect(method_call.second[:reference]).to eq(comment_one.reference)
             # last is proposal_three and has no children
             expect(method_call.last[:children]).to eq([])
           end
@@ -158,43 +158,57 @@ module Decidim
         end
       end
 
-      context "when using self.proposal method" do
+      context "when using self.get_one method" do
         let(:component) { create(:proposal_component) }
         let!(:proposal) { create(:proposal, :participant_author, component:) }
         let!(:comment_one) { create(:comment, commentable: proposal) }
         let!(:comment_two) { create(:comment, commentable: proposal) }
 
-        context "and with_comments is false" do
-          it "returns an array with 1 hash element and no detailed comments in children key" do
-            method_call = Contribution.proposal(proposal.reference, "en")
-            expect(method_call.class).to eq(Hash)
-            # we have 13 keys in the returned hash
-            expect(method_call.size).to eq(13)
-            expect(method_call[:reference]).to eq(proposal.reference)
-            # reference for user author is name
-            expect(method_call[:authors]).to eq([proposal.authors.first.name])
-            # proposal has 2 comments
-            expect(method_call[:children].size).to eq(2)
-            # comments are not detailed
-            expect(method_call[:children].first.class).to eq(String)
-            expect(method_call[:children].first).to eq("#{method_call[:reference]}-#{comment_one.id}")
+        context "and getting a proposal" do
+          context "and with_comments is false" do
+            it "returns an array with 1 hash element and no detailed comments in children key" do
+              method_call = Contribution.get_one(proposal.reference, "en")
+              expect(method_call.class).to eq(Hash)
+              # we have 13 keys in the returned hash
+              expect(method_call.size).to eq(13)
+              expect(method_call[:reference]).to eq(proposal.reference)
+              # reference for user author is name
+              expect(method_call[:authors]).to eq([proposal.authors.first.name])
+              # proposal has 2 comments
+              expect(method_call[:children].size).to eq(2)
+              # comments are not detailed
+              expect(method_call[:children].first.class).to eq(String)
+              expect(method_call[:children].first).to eq(comment_one.reference)
+            end
+          end
+
+          context "and with_comments is true" do
+            it "returns an array with 1 hash element and detailed comments in children key" do
+              method_call = Contribution.get_one(proposal.reference, "en", "true")
+              expect(method_call.class).to eq(Hash)
+              # we have 13 keys in the returned hash
+              expect(method_call.size).to eq(13)
+              expect(method_call[:reference]).to eq(proposal.reference)
+              # reference for user author is name
+              expect(method_call[:authors]).to eq([proposal.authors.first.name])
+              # proposal has 2 comments
+              expect(method_call[:children].size).to eq(2)
+              # comments are detailed
+              expect(method_call[:children].first.class).to eq(Hash)
+              expect(method_call[:children].first[:reference]).to eq(comment_one.reference)
+            end
           end
         end
 
-        context "and with_comments is true" do
-          it "returns an array with 1 hash element and detailed comments in children key" do
-            method_call = Contribution.proposal(proposal.reference, "en", "true")
+        context "and getting a comment" do
+          it "returns an array with 1 hash element" do
+            method_call = Contribution.get_one(comment_one.reference, "en")
             expect(method_call.class).to eq(Hash)
             # we have 13 keys in the returned hash
             expect(method_call.size).to eq(13)
-            expect(method_call[:reference]).to eq(proposal.reference)
+            expect(method_call[:reference]).to eq(comment_one.reference)
             # reference for user author is name
-            expect(method_call[:authors]).to eq([proposal.authors.first.name])
-            # proposal has 2 comments
-            expect(method_call[:children].size).to eq(2)
-            # comments are detailed
-            expect(method_call[:children].first.class).to eq(Hash)
-            expect(method_call[:children].first[:reference]).to eq("#{method_call[:reference]}-#{comment_one.id}")
+            expect(method_call[:authors]).to eq(comment_one.author.name)
           end
         end
       end
