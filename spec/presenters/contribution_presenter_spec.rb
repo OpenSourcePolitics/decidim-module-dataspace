@@ -33,8 +33,8 @@ module Decidim
           expect(method_call.size).to eq(13)
           expect(method_call[:reference]).to eq(proposal.reference)
           expect(method_call[:title]).to eq(translated_attribute(proposal.title))
-          expect(method_call[:children].map{|hash| hash[:reference]}).to include(comment_one.reference)
-          expect(method_call[:children].map{|hash| hash[:reference]}).to include(comment_two.reference)
+          expect(method_call[:children].map { |hash| hash[:reference] }).to include(comment_one.reference)
+          expect(method_call[:children].map { |hash| hash[:reference] }).to include(comment_two.reference)
         end
       end
 
