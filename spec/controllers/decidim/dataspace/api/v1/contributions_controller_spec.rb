@@ -45,6 +45,24 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
         expect(response.parsed_body).to eq({ "error" => "Contributions not found" })
       end
     end
+
+    context "when there is a container param" do
+      let(:component_two) { create(:proposal_component) }
+      let!(:proposal_four) { create(:proposal, :participant_author, component: component_two) }
+
+      before do
+        get :index, params: { container: component_two.participatory_space.reference }
+      end
+
+      it "is a success and returns json with filtered proposals as contributions" do
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to include("application/json")
+        expect { response.parsed_body }.not_to raise_error
+        # only proposal_four is rendered
+        expect(response.parsed_body.size).to eq(1)
+        expect(response.parsed_body.first["reference"]).to eq(proposal_four.reference)
+      end
+    end
   end
 
   describe "show" do
@@ -74,7 +92,7 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
           # 2 comments without details
           expect(response.parsed_body["children"].size).to eq(2)
           expect(response.parsed_body["children"].first.class).to eq(String)
-          expect(response.parsed_body["children"].first).to eq("#{proposal["reference"]}-#{comment_one.id}")
+          expect(response.parsed_body["children"].first).to eq(comment_one.reference)
         end
       end
 
@@ -98,7 +116,7 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
           # 2 comments with details
           expect(response.parsed_body["children"].size).to eq(2)
           expect(response.parsed_body["children"].first.class).to eq(Hash)
-          expect(response.parsed_body["children"].first["reference"]).to eq("#{proposal["reference"]}-#{comment_one.id}")
+          expect(response.parsed_body["children"].first["reference"]).to eq(comment_one.reference)
           expect(response.parsed_body["children"].first["content"]).to eq(comment_one.body["en"])
         end
       end

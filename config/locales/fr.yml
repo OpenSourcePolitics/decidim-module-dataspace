@@ -8,7 +8,7 @@ fr:
         settings:
           global:
             add_integration: Ajouter des integrations
-            integration_url: Url des plateformes à intégrer (séparées par une virgule)
+            integration_url: "Url des plateformes à intégrer, séparées par une virgule.<br><span class='font-normal'>Si vous souhaitez uniquement les propositions d'un espace participatif, vous pouvez ajouter un param container à l'url (ex: https://example.org?container=JD-ASSE-2025-09-1)</span>"
             preferred_locale: Langue préférée
             preferred_locale_options:
               ca: ca

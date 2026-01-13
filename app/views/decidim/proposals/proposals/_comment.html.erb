@@ -1,3 +1,4 @@
+<% alignment = comment["metadata"]["alignment"] %>
 <%= content_tag :div, id: "comment_#{comment_ref}", class: "comment relative", role: "comment", data: { comment_id: comment[:reference], parent: comment[:parent] }, root_depth: comment["metadata"]["depth"]  do %>
   <div class="flex justify-start items-center">
     <div class="author__avatar-container">
@@ -6,7 +7,14 @@
     <h3 class="font-bold ml-2"><%= comment["authors"] %></h3>
     <p class="italic ml-2"><%= l(comment["created_at"].to_datetime, format: :decidim_short) %></p>
   </div>
-  <p><%= comment["content"] %></p>
+  <div class="comment__content mt-3">
+    <% if [-1, 1].include?(alignment) %>
+      <span class="<%= alignment_badge_classes(alignment) %> comment__content--label"><%= alignment_badge_label(alignment) %></span>
+    <% end %>
+    <div class="editor-content">
+      <p><%= comment["content"] %></p>
+    </div>
+  </div>
   <div data-comment-footer data-component="accordion" id="accordion-<%= comment_ref %>">
     <div id="comment-<%= comment_ref %>-replies" class="<%= "comment-reply" if comment["children"].present? %>">
       <% if comment["children"].present? %>

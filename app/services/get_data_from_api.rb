@@ -6,6 +6,13 @@ require "uri"
 class GetDataFromApi
   def self.data(url, preferred_locale)
     uri = URI(url + "/api/v1/data?preferred_locale=#{preferred_locale}")
+    if url.include?("?container")
+      array = url.split("?")
+      url = array.first
+      container_ref = array.second.split("=").second
+      uri = URI(url + "/api/v1/data?preferred_locale=#{preferred_locale}&container=#{container_ref}")
+    end
+
     begin
       result = Net::HTTP.get(uri)
       JSON.parse(result)
@@ -16,6 +23,13 @@ class GetDataFromApi
 
   def self.contributions(url, preferred_locale)
     uri = URI(url + "/api/v1/data/contributions?preferred_locale=#{preferred_locale}")
+    if url.include?("?container")
+      array = url.split("?")
+      url = array.first
+      container_ref = array.second.split("=").second
+      uri = URI(url + "/api/v1/data/contributions?preferred_locale=#{preferred_locale}&container=#{container_ref}")
+    end
+
     begin
       result = Net::HTTP.get(uri)
       JSON.parse(result)

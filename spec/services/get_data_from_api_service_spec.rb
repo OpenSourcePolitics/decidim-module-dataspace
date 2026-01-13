@@ -45,11 +45,29 @@ RSpec.describe "GetDataFromApi" do
         allow(Net::HTTP).to receive(:get).with(uri).and_return(json)
       end
 
-      it "returns json containing a list of contributions" do
-        response = GetDataFromApi.contributions(url, "en")
-        expect(response.class).to eq Array
-        expect(response.size).to eq(2)
-        expect(response[0]["title"]).to eq("Test one")
+      context "and there is no container param" do
+        it "returns json containing a list of contributions" do
+          response = GetDataFromApi.contributions(url, "en")
+          expect(response.class).to eq Array
+          expect(response.size).to eq(2)
+          expect(response[0]["title"]).to eq("Test one")
+        end
+      end
+
+      context "and there is a container param" do
+        let(:url) { "http://example.com?container=JD-PROP-2025-09-1" }
+        let(:uri) { URI("http://example.com/api/v1/data/contributions?preferred_locale=en&container=JD-PROP-2025-09-1") }
+
+        before do
+          allow(Net::HTTP).to receive(:get).with(uri).and_return([contrib_one].to_json)
+        end
+
+        it "returns json containing filtered contributions" do
+          response = GetDataFromApi.contributions(url, "en")
+          expect(response.class).to eq Array
+          expect(response.size).to eq(1)
+          expect(response[0]["title"]).to eq("Test one")
+        end
       end
     end
 

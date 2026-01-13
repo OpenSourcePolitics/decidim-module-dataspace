@@ -20,7 +20,7 @@ module Decidim
             scope :data do
               get "/", to: "data#index"
               resources :containers, only: [:index, :show], param: :reference
-              resources :authors, only: [:index, :show, :create], param: :reference
+              resources :authors, only: [:index, :show], param: :reference
               resources :contributions, only: [:index, :show], param: :reference
             end
           end
@@ -42,6 +42,8 @@ module Decidim
       initializer "dataspace-extends" do
         config.after_initialize do
           require "extends/controllers/decidim/proposals/proposals_controller_extends"
+          require "extends/models/decidim/comments/comment_extends"
+          require "extends/lib/decidim/core_extends"
         end
       end
 

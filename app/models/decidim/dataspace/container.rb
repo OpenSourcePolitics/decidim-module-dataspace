@@ -15,7 +15,6 @@ module Decidim
       def self.from_proposals(preferred_locale)
         proposals = Decidim::Proposals::Proposal.published
                                                 .not_hidden
-                                                .only_amendables
                                                 .includes([:component])
         locale = "en"
         available_locales = proposals.first&.organization&.available_locales
@@ -32,32 +31,13 @@ module Decidim
         return nil unless container
 
         locale = container.organization.available_locales.include?(preferred_locale) ? preferred_locale : "en"
-        {
-          "reference": container.reference,
-          "source": Decidim::ResourceLocatorPresenter.new(container).url,
-          "name": container.title[locale],
-          "description": container.description[locale],
-          "metadata": {},
-          "created_at": container.created_at,
-          "updated_at": container.updated_at,
-          "deleted_at": nil
-        }
+        Decidim::Dataspace::ContainerPresenter.new(container).container(locale)
       end
 
       def self.from_proposal(proposal, locale)
         component = proposal.component
         container = component.participatory_space_type.constantize.find(component.participatory_space_id)
-
-        {
-          "reference": container.reference,
-          "source": Decidim::ResourceLocatorPresenter.new(container).url,
-          "name": container.title[locale],
-          "description": container.description[locale],
-          "metadata": {},
-          "created_at": container.created_at,
-          "updated_at": container.updated_at,
-          "deleted_at": nil
-        }
+        Decidim::Dataspace::ContainerPresenter.new(container).container(locale)
       end
     end
   end
