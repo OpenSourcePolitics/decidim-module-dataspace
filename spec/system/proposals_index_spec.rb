@@ -138,8 +138,8 @@ describe "Proposals" do
             # 3 proposals
             expect(page).to have_css("[id^='proposals__proposal']", count: 3)
             # no external proposals
-            expect(page).not_to have_css("[id='JD-PROP-2025-09-1']")
-            expect(page).not_to have_css("[id='JD-PROP-2025-09-20']")
+            expect(page).to have_no_css("[id='JD-PROP-2025-09-1']")
+            expect(page).to have_no_css("[id='JD-PROP-2025-09-20']")
           end
         end
       end

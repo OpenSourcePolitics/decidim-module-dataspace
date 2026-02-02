@@ -22,9 +22,9 @@ describe "Admin adds integrations on proposals component" do
     end
 
     it "doesn't display the fields related to it" do
-      expect(page).not_to have_css("div.add_integration_container")
-      expect(page).not_to have_css("div.integration_url_container")
-      expect(page).not_to have_css("div.preferred_locale_container")
+      expect(page).to have_no_css("div.add_integration_container")
+      expect(page).to have_no_css("div.integration_url_container")
+      expect(page).to have_no_css("div.preferred_locale_container")
     end
   end
 

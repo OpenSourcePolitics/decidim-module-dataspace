@@ -2,7 +2,7 @@
 
 class AddEnableDataspaceToOrganizations < ActiveRecord::Migration[7.0]
   def up
-    add_column :decidim_organizations, :enable_dataspace, :boolean, default: false
+    add_column :decidim_organizations, :enable_dataspace, :boolean, default: false, null: false
   end
 
   def down
