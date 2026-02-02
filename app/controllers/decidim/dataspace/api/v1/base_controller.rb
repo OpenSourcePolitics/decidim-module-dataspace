@@ -2,8 +2,9 @@
 
 module Decidim
   module Dataspace
-    class Api::V1::BaseController < ActionController::API
+    class Api::V1::BaseController < Decidim::Api::ApplicationController
       # skip_before_action :verify_authenticity_token
+      before_action :verify_dataspace_enabled
 
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from ActiveRecord::RecordInvalid, with: :validation_error
@@ -20,6 +21,14 @@ module Decidim
 
       def resource_not_found(resource)
         render json: { error: "#{resource} not found" }, status: :not_found
+      end
+
+      def verify_dataspace_enabled
+        render json: { error: "Dataspace is not enabled for this organization" }, status: :forbidden unless dataspace_enabled?
+      end
+
+      def dataspace_enabled?
+        current_organization.enable_dataspace == true
       end
     end
   end

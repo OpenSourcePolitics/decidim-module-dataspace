@@ -17,8 +17,7 @@ module ProposalsControllerExtends
                                                  .order(position: :asc)
         render "decidim/proposals/proposals/participatory_texts/participatory_text"
       else
-        if component_settings.add_integration && component_settings.integration_url.present? && data.present?
-
+        if verify_dataspace? && data.present?
           external_proposals = data["contributions"]
           @authors = data["authors"]
           proposals = search.result
@@ -42,21 +41,29 @@ module ProposalsControllerExtends
     end
 
     def external_proposal
-      uri = URI.parse(params[:url])
-      url = "#{uri.scheme}://#{uri.host}"
-      url += ":3000" if uri.host == "localhost"
+      if verify_dataspace?
+        uri = URI.parse(params[:url])
+        url = "#{uri.scheme}://#{uri.host}"
+        url += ":3000" if uri.host == "localhost"
 
-      @external_proposal = GetDataFromApi.contribution(url, params[:reference], component_settings.preferred_locale || "en", "true")
-      return if @external_proposal.nil?
+        @external_proposal = GetDataFromApi.contribution(url, params[:reference], component_settings.preferred_locale || "en", "true")
+        return if @external_proposal.nil?
 
-      @comments = @external_proposal["children"]
-      @parent_comments = @comments.select { |comment| comment["parent"] == @external_proposal["reference"] } if @comments
-      @authors = GetDataFromApi.authors(url, component_settings.preferred_locale || "en")
-                               .select { |author| @external_proposal["authors"].include?(author["reference"]) }
-                               .map { |author| author["name"] }.join(", ")
+        @comments = @external_proposal["children"]
+        @parent_comments = @comments.select { |comment| comment["parent"] == @external_proposal["reference"] } if @comments
+        @authors = GetDataFromApi.authors(url, component_settings.preferred_locale || "en")
+                                 .select { |author| @external_proposal["authors"].include?(author["reference"]) }
+                                 .map { |author| author["name"] }.join(", ")
+      else
+        redirect_to root_url
+      end
     end
 
     private
+
+    def verify_dataspace?
+      current_organization.enable_dataspace == true && component_settings.add_integration && component_settings.integration_url.present?
+    end
 
     def voted_proposals
       if current_user
