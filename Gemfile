@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 ruby RUBY_VERSION
 
-gem "decidim", "~> 0.29.1"
+gem "decidim", "~> 0.29.3"
 gem "decidim-dataspace", path: "."
 
 gem "bootsnap", "~> 1.4"
@@ -14,7 +14,7 @@ gem "uri", ">= 1.0.4"
 group :development, :test do
   gem "byebug", "~> 11.0", platform: :mri
 
-  gem "decidim-dev", "~> 0.29.1"
+  gem "decidim-dev", "~> 0.29.3"
 end
 
 group :development do
