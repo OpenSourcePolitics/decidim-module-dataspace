@@ -7,8 +7,8 @@ module Decidim
     describe ProposalsController do
       routes { Decidim::Proposals::Engine.routes }
 
+      let(:component) { create(:proposal_component, :with_geocoding_enabled) }
       let(:user) { create(:user, :confirmed, organization: component.organization) }
-
       let(:proposal_params) do
         {
           component_id: component.id
@@ -24,147 +24,6 @@ module Decidim
       end
 
       describe "GET index" do
-        context "when participatory texts are disabled" do
-          let(:component) { create(:proposal_component, :with_geocoding_enabled) }
-
-          context "and there are no externals proposals" do
-            it "sorts proposals by search defaults" do
-              get :index
-              expect(response).to have_http_status(:ok)
-              expect(subject).to render_template(:index)
-              expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
-              expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
-            end
-          end
-
-          context "and there are externals proposals" do
-            let(:component) { create(:proposal_component) }
-            let!(:proposals) { create_list(:proposal, 2, component:) }
-            let(:contrib_one) do
-              { "reference": "JD-PROP-2025-09-1",
-                "source": "http://localhost:3000/processes/satisfaction-hope/f/7/proposals/1",
-                "container": "JD-PART-2025-09-1",
-                "locale": "en",
-                "title": "Test one",
-                "content": "Debitis repellat provident",
-                "authors": ["JD-MEET-2025-09-6"],
-                "created_at": "2025-09-11T10:20:21.222Z",
-                "updated_at": "2025-09-11T10:21:56.604Z",
-                "deleted_at": nil }
-            end
-            let(:contrib_two) do
-              { "reference": "JD-PROP-2025-09-20",
-                "source": "http://localhost:3000/assemblies/smile-trivial/f/25/proposals/20",
-                "container": "JD-ASSE-2025-09-1",
-                "locale": "en",
-                "title": "Test two",
-                "content": "Non et vel",
-                "authors": ["JD-MEET-2025-09-23"],
-                "created_at": "2025-09-11T10:43:23.743Z",
-                "updated_at": "2025-09-11T10:43:27.147Z",
-                "deleted_at": nil }
-            end
-            let(:container_one) do
-              {
-                "reference": "JD-PART-2025-09-1",
-                "source": "http://localhost:3000/processes/satisfaction-hope",
-                "name": "Cupiditate natus dignissimos saepe ut.",
-                "description": "<p>Voluptas recusandae est. Nesciunt excepturi corrupti. Qui natus eligendi.</p>",
-                "metadata": {},
-                "created_at": "2025-09-11T10:14:58.111Z",
-                "updated_at": "2025-09-11T10:14:58.126Z",
-                "deleted_at": nil
-              }
-            end
-            let(:container_two) do
-              {
-                "reference": "JD-ASSE-2025-09-1",
-                "source": "http://localhost:3000/assemblies/smile-trivial",
-                "name": "Molestiae aut corporis quas et.",
-                "description": "<p>Ratione autem repellendus. Error voluptatem ipsam. Ut dicta velit.</p>",
-                "metadata": {},
-                "created_at": "2025-09-11T10:38:07.682Z",
-                "updated_at": "2025-09-11T10:38:07.682Z",
-                "deleted_at": nil
-              }
-            end
-            let(:author_one) do
-              {
-                "reference": "JD-MEET-2025-09-6",
-                "name": "Animi voluptatum.",
-                "source": "http://localhost:3000/processes/satisfaction-hope/f/5/meetings/6"
-              }
-            end
-            let(:author_two) do
-              {
-                "reference": "JD-MEET-2025-09-23",
-                "name": "Et natus.",
-                "source": "http://localhost:3000/assemblies/smile-trivial/f/23/meetings/23"
-              }
-            end
-
-            let(:json) do
-              {
-                "containers" => [container_one, container_two],
-                "contributions" => [contrib_one, contrib_two],
-                "authors" => [author_one, author_two]
-              }
-            end
-
-            context "and there is one url in integration url" do
-              before do
-                component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
-                allow(GetDataFromApi).to receive(:data).and_return(json)
-              end
-
-              it "sorts proposals by search defaults and define external_proposals and other variables" do
-                get :index
-                expect(response).to have_http_status(:ok)
-                expect(subject).to render_template(:index)
-                expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
-                expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
-                expect(assigns(:authors).count).to eq 2
-                expect(assigns(:authors).first[:reference]).to eq "JD-MEET-2025-09-6"
-                expect(assigns(:authors).last[:reference]).to eq "JD-MEET-2025-09-23"
-                expect(assigns(:total_count)).to eq 4
-                expect(assigns(:current_page)).to eq 1
-                expect(assigns(:total_pages)).to eq 1
-                expect(assigns(:proposals).count).to eq 2
-                expect(assigns(:external_proposals).count).to eq 2
-                expect(assigns(:external_proposals).first[:reference]).to eq "JD-PROP-2025-09-1"
-                expect(assigns(:external_proposals).last[:reference]).to eq "JD-PROP-2025-09-20"
-              end
-            end
-
-            context "and there are 2 urls in integration_url" do
-              before do
-                component.update!(settings: { add_integration: true, integration_url: "http://example.org, http://example.org,", preferred_locale: "en" })
-                allow(GetDataFromApi).to receive(:data).and_return(json)
-              end
-
-              it "returns 4 external proposals and 4 authors" do
-                get :index
-                expect(response).to have_http_status(:ok)
-                expect(subject).to render_template(:index)
-                expect(assigns(:external_proposals).count).to eq 4
-                expect(assigns(:authors).count).to eq 4
-              end
-            end
-          end
-
-          it "sets two different collections" do
-            geocoded_proposals = create_list(:proposal, 10, component:, latitude: 1.1, longitude: 2.2)
-            non_geocoded_proposals = create_list(:proposal, 2, component:, latitude: nil, longitude: nil)
-
-            get :index
-            expect(response).to have_http_status(:ok)
-            expect(subject).to render_template(:index)
-
-            expect(assigns(:proposals).count).to eq 12
-            expect(assigns(:proposals)).to match_array(geocoded_proposals + non_geocoded_proposals)
-          end
-        end
-
         context "when participatory texts are enabled" do
           let(:component) { create(:proposal_component, :with_participatory_texts_enabled) }
 
@@ -185,6 +44,164 @@ module Decidim
               expect(response).to have_http_status(:ok)
               emendations = assigns(:proposals).select(&:emendation?)
               expect(emendations).to be_empty
+            end
+          end
+        end
+
+        context "when participatory texts are disabled" do
+          context "and dataspace is disabled" do
+            let!(:geocoded_proposals) { create_list(:proposal, 10, component:, latitude: 1.1, longitude: 2.2) }
+            let!(:proposals) { create_list(:proposal, 2, component:, latitude: nil, longitude: nil) }
+
+            before do
+              get :index
+            end
+
+            it "sorts proposals by search defaults" do
+              expect(response).to have_http_status(:ok)
+              expect(subject).to render_template(:index)
+              expect(assigns(:proposals).size).to eq(12)
+              expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
+              expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+            end
+
+            it "sets two different collections" do
+              expect(assigns(:proposals)).to match_array(geocoded_proposals + proposals)
+            end
+          end
+
+          context "and dataspace is enabled" do
+            let!(:proposals) { create_list(:proposal, 2, component:) }
+
+            before do
+              component.organization.enable_dataspace = true
+              component.organization.save!
+            end
+
+            context "and there are no external proposals" do
+              it "returns proposals" do
+                get :index
+                expect(response).to have_http_status(:ok)
+                expect(subject).to render_template(:index)
+                expect(assigns(:proposals).size).to eq(2)
+                expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
+                expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+              end
+            end
+
+            context "and there are externals proposals" do
+              let(:component) { create(:proposal_component) }
+              let!(:proposals) { create_list(:proposal, 2, component:) }
+              let(:contrib_one) do
+                { "reference": "JD-PROP-2025-09-1",
+                  "source": "http://localhost:3000/processes/satisfaction-hope/f/7/proposals/1",
+                  "container": "JD-PART-2025-09-1",
+                  "locale": "en",
+                  "title": "Test one",
+                  "content": "Debitis repellat provident",
+                  "authors": ["JD-MEET-2025-09-6"],
+                  "created_at": "2025-09-11T10:20:21.222Z",
+                  "updated_at": "2025-09-11T10:21:56.604Z",
+                  "deleted_at": nil }
+              end
+              let(:contrib_two) do
+                { "reference": "JD-PROP-2025-09-20",
+                  "source": "http://localhost:3000/assemblies/smile-trivial/f/25/proposals/20",
+                  "container": "JD-ASSE-2025-09-1",
+                  "locale": "en",
+                  "title": "Test two",
+                  "content": "Non et vel",
+                  "authors": ["JD-MEET-2025-09-23"],
+                  "created_at": "2025-09-11T10:43:23.743Z",
+                  "updated_at": "2025-09-11T10:43:27.147Z",
+                  "deleted_at": nil }
+              end
+              let(:container_one) do
+                {
+                  "reference": "JD-PART-2025-09-1",
+                  "source": "http://localhost:3000/processes/satisfaction-hope",
+                  "name": "Cupiditate natus dignissimos saepe ut.",
+                  "description": "<p>Voluptas recusandae est. Nesciunt excepturi corrupti. Qui natus eligendi.</p>",
+                  "metadata": {},
+                  "created_at": "2025-09-11T10:14:58.111Z",
+                  "updated_at": "2025-09-11T10:14:58.126Z",
+                  "deleted_at": nil
+                }
+              end
+              let(:container_two) do
+                {
+                  "reference": "JD-ASSE-2025-09-1",
+                  "source": "http://localhost:3000/assemblies/smile-trivial",
+                  "name": "Molestiae aut corporis quas et.",
+                  "description": "<p>Ratione autem repellendus. Error voluptatem ipsam. Ut dicta velit.</p>",
+                  "metadata": {},
+                  "created_at": "2025-09-11T10:38:07.682Z",
+                  "updated_at": "2025-09-11T10:38:07.682Z",
+                  "deleted_at": nil
+                }
+              end
+              let(:author_one) do
+                {
+                  "reference": "JD-MEET-2025-09-6",
+                  "name": "Animi voluptatum.",
+                  "source": "http://localhost:3000/processes/satisfaction-hope/f/5/meetings/6"
+                }
+              end
+              let(:author_two) do
+                {
+                  "reference": "JD-MEET-2025-09-23",
+                  "name": "Et natus.",
+                  "source": "http://localhost:3000/assemblies/smile-trivial/f/23/meetings/23"
+                }
+              end
+
+              let(:json) do
+                {
+                  "containers" => [container_one, container_two],
+                  "contributions" => [contrib_one, contrib_two],
+                  "authors" => [author_one, author_two]
+                }
+              end
+
+              context "and there is one url in integration url" do
+                before do
+                  component.update!(settings: { add_integration: true, integration_url: "http://example.org", preferred_locale: "en" })
+                  allow(GetDataFromApi).to receive(:data).and_return(json)
+                end
+
+                it "sorts proposals by search defaults and define external_proposals and other variables" do
+                  get :index
+                  expect(response).to have_http_status(:ok)
+                  expect(subject).to render_template(:index)
+                  expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
+                  expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+                  expect(assigns(:authors).count).to eq 2
+                  expect(assigns(:authors).first[:reference]).to eq "JD-MEET-2025-09-6"
+                  expect(assigns(:authors).last[:reference]).to eq "JD-MEET-2025-09-23"
+                  expect(assigns(:total_count)).to eq 4
+                  expect(assigns(:current_page)).to eq 1
+                  expect(assigns(:total_pages)).to eq 1
+                  expect(assigns(:proposals).count).to eq 2
+                  expect(assigns(:external_proposals).count).to eq 2
+                  expect(assigns(:external_proposals).first[:reference]).to eq "JD-PROP-2025-09-1"
+                  expect(assigns(:external_proposals).last[:reference]).to eq "JD-PROP-2025-09-20"
+                end
+              end
+
+              context "and there are 2 urls in integration_url" do
+                before do
+                  component.update!(settings: { add_integration: true, integration_url: "http://example.org, http://example.org,", preferred_locale: "en" })
+                  allow(GetDataFromApi).to receive(:data).and_return(json)
+                end
+
+                it "returns 4 external proposals and 4 authors" do
+                  get :index
+                  expect(response).to have_http_status(:ok)
+                  expect(subject).to render_template(:index)
+                  expect(assigns(:external_proposals).count).to eq 4
+                  expect(assigns(:authors).count).to eq 4
+                end
+              end
             end
           end
         end
@@ -279,14 +296,29 @@ module Decidim
           allow(GetDataFromApi).to receive(:authors).and_return(authors)
         end
 
-        it "displays external_proposal view and sets variables" do
-          get :external_proposal, params: { reference: "JD-PROP-2025-09-1", param: :reference, url: "http://example.org" }
-          expect(response).to have_http_status(:ok)
-          expect(subject).to render_template(:external_proposal)
-          expect(assigns(:external_proposal)).to eq json_contrib
-          expect(assigns(:comments)).to eq json_contrib["children"]
-          expect(assigns(:parent_comments)).to eq(json_contrib["children"].select { |comment| comment["parent"] == json_contrib["reference"] })
-          expect(assigns(:authors)).to eq "Et natus."
+        context "when dataspace is disabled" do
+          it "redirects to proposals index" do
+            get :external_proposal, params: { reference: "JD-PROP-2025-09-1", param: :reference, url: "http://example.org" }
+            expect(response).to have_http_status(:redirect)
+            expect(response).to redirect_to("/proposals")
+          end
+        end
+
+        context "when dataspace is enabled" do
+          before do
+            component.organization.enable_dataspace = true
+            component.organization.save!
+          end
+
+          it "displays external_proposal view and sets variables" do
+            get :external_proposal, params: { reference: "JD-PROP-2025-09-1", param: :reference, url: "http://example.org" }
+            expect(response).to have_http_status(:ok)
+            expect(subject).to render_template(:external_proposal)
+            expect(assigns(:external_proposal)).to eq json_contrib
+            expect(assigns(:comments)).to eq json_contrib["children"]
+            expect(assigns(:parent_comments)).to eq(json_contrib["children"].select { |comment| comment["parent"] == json_contrib["reference"] })
+            expect(assigns(:authors)).to eq "Et natus."
+          end
         end
       end
 
