@@ -41,12 +41,13 @@ module Decidim
 
       initializer "dataspace-extends" do
         config.after_initialize do
-          require "extends/controllers/decidim/proposals/proposals_controller_extends"
+          require "extends/controllers/decidim/proposals/proposals_controller_dataspace_extends"
           require "extends/models/decidim/comments/comment_extends"
           require "extends/lib/decidim/core_extends"
           require "extends/commands/decidim/system/create_organization_extends"
           require "extends/commands/decidim/system/update_organization_extends"
-          require "extends/forms/decidim/system/base_organization_form_extends"
+          require "extends/forms/decidim/system/register_organization_form_extends"
+          require "extends/forms/decidim/system/update_organization_form_extends"
         end
       end
 

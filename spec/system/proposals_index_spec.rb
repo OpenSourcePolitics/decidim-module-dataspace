@@ -157,11 +157,10 @@ describe "Proposals" do
 
           it "lists the proposals and the external proposals" do
             visit_component
-            # 5 cards
-            expect(page).to have_css("a[class='card__list']", count: 5)
             # 3 proposals
-            expect(page).to have_css("[id^='proposals__proposal']", count: 3)
+            expect(page).to have_css("a[class='card__list']", count: 3)
             # 2 external proposals
+            expect(page).to have_css("a[class='card__list card__list-external']", count: 2)
             expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 1)
             expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 1)
           end
@@ -181,9 +180,9 @@ describe "Proposals" do
 
               click_on "Next"
               # proposals and external proposals on second page
-              expect(page).to have_css("a[class='card__list']", count: 5)
               expect(page).to have_css("[data-pages] [data-page][aria-current='page']", text: "2")
-              expect(page).to have_css("[id^='proposals__proposal']", count: 3)
+              expect(page).to have_css("a[class='card__list']", count: 3)
+              expect(page).to have_css("a[class='card__list card__list-external']", count: 2)
               expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 1)
               expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 1)
             end
@@ -197,11 +196,10 @@ describe "Proposals" do
 
           it "returns the double amount of external proposals" do
             visit_component
-            # 7 cards
-            expect(page).to have_css("a[class='card__list']", count: 7)
             # 3 proposals
-            expect(page).to have_css("[id^='proposals__proposal']", count: 3)
+            expect(page).to have_css("a[class='card__list']", count: 3)
             # 4 external proposals
+            expect(page).to have_css("a[class='card__list card__list-external']", count: 4)
             expect(page).to have_css("[id='JD-PROP-2025-09-1']", count: 2)
             expect(page).to have_css("[id='JD-PROP-2025-09-20']", count: 2)
           end
