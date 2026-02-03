@@ -3,7 +3,7 @@
 require "active_support/concern"
 require "uri"
 
-module ProposalsControllerExtends
+module ProposalsControllerDataspaceExtends
   extend ActiveSupport::Concern
 
   included do
@@ -128,4 +128,4 @@ module ProposalsControllerExtends
   end
 end
 
-Decidim::Proposals::ProposalsController.include(ProposalsControllerExtends)
+Decidim::Proposals::ProposalsController.include(ProposalsControllerDataspaceExtends)
