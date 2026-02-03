@@ -27,12 +27,26 @@
     </div>
   <% end %>
 <% else %>
-  <%= link_to external_proposal["source"], class: "card__list", id: external_proposal["reference"] do %>
+  <%= link_to external_proposal["source"], class: "card__list card__list-external", id: external_proposal["reference"] do %>
     <%= content_tag(:div, class: "card__list-content") do %>
       <%= content_tag :h4, class: "h4 card__list-title" do %>
-        <%= external_proposal["title"] %>
+        <%= external_proposal["title"] %> ( <%= t('.view_from', platform: display_host(external_proposal["source"])) %>)
       <% end %>
-      <p>Proposal from external platform</p>
+      <div class="card__list-metadata">
+       <div class="author__container">
+         <div class="author__avatar-container">
+           <img alt="default avatar" class="author__avatar" src="<%= asset_pack_path("media/images/default-avatar.svg") %>">
+         </div>
+         <p class="author_name"><%= @authors.select{|author| external_proposal["authors"].include?(author["reference"])}.map{|author| author["name"]}.join(', ') %></p>
+       </div>
+        <div class="data-comments-count">
+          <%= icon("wechat-line") %>
+          <p><%= external_proposal["children"].count %></p>
+        </div>
+        <% if external_proposal["metadata"]["state"]["state"].present? %>
+          <div><p><%= external_state_item(external_proposal["metadata"]["state"]) %></p></div>
+        <% end %>
+      </div>
     <% end %>
   <% end %>
 <% end %>
