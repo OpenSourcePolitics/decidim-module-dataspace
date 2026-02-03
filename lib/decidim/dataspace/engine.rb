@@ -46,7 +46,8 @@ module Decidim
           require "extends/lib/decidim/core_extends"
           require "extends/commands/decidim/system/create_organization_extends"
           require "extends/commands/decidim/system/update_organization_extends"
-          require "extends/forms/decidim/system/base_organization_form_extends"
+          require "extends/forms/decidim/system/register_organization_form_extends"
+          require "extends/forms/decidim/system/update_organization_form_extends"
         end
       end
 

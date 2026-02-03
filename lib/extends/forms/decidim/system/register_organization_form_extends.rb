@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module BaseOrganizationFormExtends
+module RegisterOrganizationFormExtends
   extend ActiveSupport::Concern
 
   included do
@@ -8,4 +8,4 @@ module BaseOrganizationFormExtends
   end
 end
 
-Decidim::System::BaseOrganizationForm.include(BaseOrganizationFormExtends)
+Decidim::System::RegisterOrganizationForm.include(RegisterOrganizationFormExtends)
