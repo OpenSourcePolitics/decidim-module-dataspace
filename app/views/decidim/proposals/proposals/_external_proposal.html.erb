@@ -27,7 +27,7 @@
     </div>
   <% end %>
 <% else %>
-  <%= link_to external_proposal["source"], class: "card__list card__list-external", id: external_proposal["reference"] do %>
+  <%= link_to external_proposal_proposals_path(external_proposal["reference"], url: external_proposal["source"]), class: "card__list card__list-external", id: external_proposal["reference"] do %>
     <%= content_tag(:div, class: "card__list-content") do %>
       <%= content_tag :h4, class: "h4 card__list-title" do %>
         <%= external_proposal["title"] %> ( <%= t('.view_from', platform: display_host(external_proposal["source"])) %>)

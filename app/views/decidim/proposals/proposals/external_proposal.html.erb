@@ -11,7 +11,7 @@
 
   <section class="layout-main__section layout-main__heading">
     <%= render partial: "voting_rules" %>
-      <h1 class="h2 decorator"><%= @external_proposal["title"] %></h1>
+      <h1 class="h2 decorator"><%= @external_proposal["title"] %> (<%= t('.view_from', platform: display_host(@external_proposal["source"])) %>)</h1>
       <div class="layout-author">
         <div class="author__avatar-container">
           <img alt="default avatar" class="author__avatar" src="<%= asset_pack_path("media/images/default-avatar.svg") %>">

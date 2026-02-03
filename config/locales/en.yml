@@ -29,3 +29,8 @@ en:
       proposals:
         external_proposal:
           view_from: View from platform %{platform}
+  layouts:
+    decidim:
+      shared:
+        layout_item:
+          view_from: view from plateform %{platform}
