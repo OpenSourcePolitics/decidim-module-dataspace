@@ -8,7 +8,7 @@
     <div class="card__grid-text">
       <div class="card__grid-text-title">
         <%= content_tag :h4, external_proposal["title"], class: "h4 text-secondary" %>
-        <% if external_proposal["metadata"]["state"]["state"].present? %>
+        <% if external_proposal.dig("metadata", "state", "state").present? %>
           <%= external_state_item(external_proposal["metadata"]["state"]) %>
         <% end %>
       </div>
@@ -22,7 +22,7 @@
       </div>
       <div class="mb-3">
         <%= icon("wechat-line") %>
-        <p><%= external_proposal["children"].count %></p>
+        <p><%= external_proposal["children"].present? ?  external_proposal["children"].count : 0 %></p>
       </div>
     </div>
   <% end %>
@@ -41,9 +41,9 @@
        </div>
         <div class="data-comments-count">
           <%= icon("wechat-line") %>
-          <p><%= external_proposal["children"].count %></p>
+          <p><%= external_proposal["children"].present? ?  external_proposal["children"].count : 0 %></p>
         </div>
-        <% if external_proposal["metadata"]["state"]["state"].present? %>
+        <% if external_proposal.dig("metadata", "state", "state").present? %>
           <div><p><%= external_state_item(external_proposal["metadata"]["state"]) %></p></div>
         <% end %>
       </div>
