@@ -7,6 +7,8 @@ module ProposalsControllerExtends
   extend ActiveSupport::Concern
 
   included do
+    before_action :dataspace_enabled, only: :external_proposal
+
     def index
       if component_settings.participatory_texts_enabled?
         @proposals = Decidim::Proposals::Proposal.where(component: current_component)
@@ -17,8 +19,7 @@ module ProposalsControllerExtends
                                                  .order(position: :asc)
         render "decidim/proposals/proposals/participatory_texts/participatory_text"
       else
-        if component_settings.add_integration && component_settings.integration_url.present? && data.present?
-
+        if verify_dataspace? && data.present?
           external_proposals = data["contributions"]
           @authors = data["authors"]
           proposals = search.result
@@ -57,6 +58,14 @@ module ProposalsControllerExtends
     end
 
     private
+
+    def verify_dataspace?
+      current_organization.enable_dataspace == true && component_settings.add_integration && component_settings.integration_url.present?
+    end
+
+    def dataspace_enabled
+      redirect_to(root_url) && return unless verify_dataspace?
+    end
 
     def voted_proposals
       if current_user

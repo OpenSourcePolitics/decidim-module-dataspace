@@ -12,11 +12,8 @@ module CoreExtends
       lambda do |resource, component|
         ref = ""
 
-        if resource.is_a?(Decidim::HasComponent) && component.present?
-          # It is a component resource
-          ref = component.participatory_space.organization.reference_prefix
-        elsif resource.is_a?(Decidim::Comments::Comment) && component.present?
-          # It is a comment resource
+        if (resource.is_a?(Decidim::HasComponent) || resource.is_a?(Decidim::Comments::Comment)) && component.present?
+          # It is a component resource or a comment resource
           ref = component.participatory_space.organization.reference_prefix
         elsif resource.is_a?(Decidim::Participable)
           # It is a participatory space

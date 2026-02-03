@@ -11,43 +11,62 @@ describe Decidim::Dataspace::Api::V1::DataController do
   let!(:proposal_three) { create(:proposal, :official, component:) }
 
   describe "index" do
-    context "when there is no container param" do
+    context "when dataspace is disabled" do
       before do
+        request.env["decidim.current_organization"] = component.organization
         get :index
       end
 
-      it "is successful and returns json" do
-        expect(response).to have_http_status(:ok)
-        expect(response.content_type).to include("application/json")
-        expect { response.parsed_body }.not_to raise_error
-      end
-
-      it "returns all data" do
-        expect(response.parsed_body["contributions"].size).to eq(3)
-        expect(response.parsed_body["authors"].size).to eq(3)
-        expect(response.parsed_body["containers"].size).to eq(1)
+      it "returns a forbidden status" do
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
-    context "when there is a container param" do
-      let(:component_two) { create(:proposal_component) }
-      let!(:proposal_four) { create(:proposal, :participant_author, component: component_two) }
-
+    context "when dataspace is enabled" do
       before do
-        get :index, params: { container: component_two.participatory_space.reference }
+        request.env["decidim.current_organization"] = component.organization
+        component.organization.enable_dataspace = true
+        component.organization.save!
       end
 
-      it "is successful and returns json" do
-        expect(response).to have_http_status(:ok)
-        expect(response.content_type).to include("application/json")
-        expect { response.parsed_body }.not_to raise_error
+      context "and there is no container param" do
+        before do
+          get :index
+        end
+
+        it "is successful and returns json" do
+          expect(response).to have_http_status(:ok)
+          expect(response.content_type).to include("application/json")
+          expect { response.parsed_body }.not_to raise_error
+        end
+
+        it "returns all data" do
+          expect(response.parsed_body["contributions"].size).to eq(3)
+          expect(response.parsed_body["authors"].size).to eq(3)
+          expect(response.parsed_body["containers"].size).to eq(1)
+        end
       end
 
-      it "returns data with filtered contributions" do
-        expect(response.parsed_body["contributions"].size).to eq(1)
-        expect(response.parsed_body["contributions"].first["reference"]).to eq(proposal_four.reference)
-        expect(response.parsed_body["authors"].size).to eq(4)
-        expect(response.parsed_body["containers"].size).to eq(2)
+      context "and there is a container param" do
+        let(:component_two) { create(:proposal_component) }
+        let!(:proposal_four) { create(:proposal, :participant_author, component: component_two) }
+
+        before do
+          get :index, params: { container: component_two.participatory_space.reference }
+        end
+
+        it "is successful and returns json" do
+          expect(response).to have_http_status(:ok)
+          expect(response.content_type).to include("application/json")
+          expect { response.parsed_body }.not_to raise_error
+        end
+
+        it "returns data with filtered contributions" do
+          expect(response.parsed_body["contributions"].size).to eq(1)
+          expect(response.parsed_body["contributions"].first["reference"]).to eq(proposal_four.reference)
+          expect(response.parsed_body["authors"].size).to eq(4)
+          expect(response.parsed_body["containers"].size).to eq(2)
+        end
       end
     end
   end

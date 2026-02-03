@@ -1,4 +1,7 @@
 <% manifest.settings(settings_name).attributes.each do |field_name, settings_attribute| %>
+  <% dataspace_related = [:add_integration, :integration_url, :preferred_locale] %>
+  <% next if dataspace_related.include?(field_name) && current_organization.enable_dataspace == false %>
+
   <div class="row column mb-2">
     <%= settings_attribute_input(
           form,

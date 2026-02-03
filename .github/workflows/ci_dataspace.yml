@@ -20,7 +20,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  main:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: rokroskar/workflow-run-cleanup-action@v0.3.0
+        if: "github.ref != 'refs/heads/develop'"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - uses: OpenSourcePolitics/lint-action@master
+  tests:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
