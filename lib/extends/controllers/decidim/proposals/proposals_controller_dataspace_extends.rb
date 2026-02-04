@@ -18,28 +18,28 @@ module ProposalsControllerDataspaceExtends
                                                  .includes(:category, :scope, :attachments, :coauthorships)
                                                  .order(position: :asc)
         render "decidim/proposals/proposals/participatory_texts/participatory_text"
+      elsif verify_dataspace? && data.present?
+        external_proposals = data["contributions"]
+        @authors = data["authors"]
+        proposals = search.result
+        proposals = reorder(proposals)
+        proposals = ordered_proposals(proposals).includes(:component, :coauthorships, :attachments)
+        @total_count = proposals.size + external_proposals.size
+        @current_page = params[:page].to_i
+        @current_page = 1 if @current_page < 1
+        @total_pages = (@total_count.to_f / per_page).ceil
+        @proposals, @external_proposals = define_proposals_and_external_proposals(proposals, external_proposals, @current_page, per_page)
+        # Create a pagination object for view
+        @pagination = create_pagination_object(@total_count, @current_page, per_page)
       else
-        if verify_dataspace? && data.present?
-          external_proposals = data["contributions"]
-          @authors = data["authors"]
-          proposals = search.result
-          proposals = reorder(proposals.includes(:component, :coauthorships, :attachments))
-          @total_count = proposals.size + external_proposals.size
-          @current_page = params[:page].to_i
-          @current_page = 1 if @current_page < 1
-          @total_pages = (@total_count.to_f / per_page).ceil
-          @proposals, @external_proposals = define_proposals_and_external_proposals(proposals, external_proposals, @current_page, per_page)
-          # Create a pagination object for view
-          @pagination = create_pagination_object(@total_count, @current_page, per_page)
-        else
-          @proposals = search.result
-          @proposals = reorder(@proposals)
-          @proposals = paginate(@proposals)
-          @proposals = @proposals.includes(:component, :coauthorships, :attachments)
-        end
-
-        @voted_proposals = voted_proposals
+        @proposals = search.result
+        @proposals = reorder(@proposals)
+        @proposals = ordered_proposals(@proposals).page(params[:page])
+                                                  .per(per_page)
+                                                  .includes(:component, :coauthorships, :attachments)
+        @proposals = paginate(@proposals)
       end
+      @voted_proposals = voted_proposals
     end
 
     def external_proposal
@@ -65,6 +65,12 @@ module ProposalsControllerDataspaceExtends
 
     def dataspace_enabled
       redirect_to(root_url) && return unless verify_dataspace?
+    end
+
+    def ordered_proposals(proposals)
+      # integrate the modifications from decidim-app lib/extends/controllers/decidim/proposals/proposals_controller_extends.rb
+      ids = proposals.ids
+      Decidim::Proposals::Proposal.where(id: ids).order(Arel.sql("position(decidim_proposals_proposals.id::text in '#{ids.join(",")}')"))
     end
 
     def voted_proposals
