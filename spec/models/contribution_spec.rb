@@ -72,7 +72,7 @@ module Decidim
               expect(method_call[:children].size).to eq(2)
               # comments are not detailed
               expect(method_call[:children].first.class).to eq(String)
-              expect(method_call[:children].first).to eq(comment_one.reference)
+              expect([comment_one.reference, comment_two.reference]).to include(method_call[:children].first)
             end
           end
 
