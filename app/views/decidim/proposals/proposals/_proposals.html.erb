@@ -4,7 +4,7 @@
   ).html_safe, callout_class: "warning [&>a]:text-secondary") %>
 <% end %>
 
-<% if @proposals.empty? && @external_proposals.empty? %>
+<% if @proposals.empty? && @external_proposals&.empty? %>
   <%= cell("decidim/announcement", params[:filter].present? ? t(".empty_filters") : t(".empty")) %>
 <% else %>
   <div class="flex items-center justify-between">
