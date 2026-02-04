@@ -169,7 +169,7 @@ describe "Proposals" do
             before do
               # Decidim::Paginable::OPTIONS.first is 25
               create_list(:proposal, Decidim::Paginable::OPTIONS.first, component:)
-              # we have already create 3 proposals, so we will have a total of 28 proposals
+              # we have already created 3 proposals, so we will have a total of 28 proposals
             end
 
             it "paginates them with proposals first and external proposals at the end" do

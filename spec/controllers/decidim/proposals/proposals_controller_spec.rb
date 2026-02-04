@@ -61,8 +61,7 @@ module Decidim
               expect(response).to have_http_status(:ok)
               expect(subject).to render_template(:index)
               expect(assigns(:proposals).size).to eq(12)
-              expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
-              expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+              expect(assigns(:proposals).order_values).to eq(["position(decidim_proposals_proposals.id::text in '#{assigns(:proposals).ids.join(",")}')"])
             end
 
             it "sets two different collections" do
@@ -84,8 +83,7 @@ module Decidim
                 expect(response).to have_http_status(:ok)
                 expect(subject).to render_template(:index)
                 expect(assigns(:proposals).size).to eq(2)
-                expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
-                expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+                expect(assigns(:proposals).order_values).to eq(["position(decidim_proposals_proposals.id::text in '#{assigns(:proposals).ids.join(",")}')"])
               end
             end
 
@@ -173,8 +171,7 @@ module Decidim
                   get :index
                   expect(response).to have_http_status(:ok)
                   expect(subject).to render_template(:index)
-                  expect(assigns(:proposals).order_values).to eq [Decidim::Proposals::Proposal.arel_table[Decidim::Proposals::Proposal.primary_key] * Arel.sql("RANDOM()")]
-                  expect(assigns(:proposals).order_values.map(&:to_sql)).to eq ["\"decidim_proposals_proposals\".\"id\" * RANDOM()"]
+                  expect(assigns(:proposals).order_values).to eq ["position(decidim_proposals_proposals.id::text in '#{assigns(:proposals).ids.join(",")}')"]
                   expect(assigns(:authors).count).to eq 2
                   expect(assigns(:authors).first[:reference]).to eq "JD-MEET-2025-09-6"
                   expect(assigns(:authors).last[:reference]).to eq "JD-MEET-2025-09-23"
