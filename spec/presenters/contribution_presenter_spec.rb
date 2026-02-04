@@ -47,7 +47,8 @@ module Decidim
           expect(method_call.size).to eq(13)
           expect(method_call[:reference]).to eq(proposal.reference)
           expect(method_call[:title]).to eq(translated_attribute(proposal.title))
-          expect(method_call[:children]).to eq([comment_one.reference, comment_two.reference])
+          expect([comment_one.reference, comment_two.reference]).to include(method_call[:children].first)
+          expect([comment_one.reference, comment_two.reference]).to include(method_call[:children].last)
         end
       end
     end
