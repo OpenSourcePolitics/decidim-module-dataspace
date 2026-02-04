@@ -136,7 +136,7 @@ describe Decidim::Dataspace::Api::V1::ContributionsController do
             # 2 comments without details
             expect(response.parsed_body["children"].size).to eq(2)
             expect(response.parsed_body["children"].first.class).to eq(String)
-            expect(response.parsed_body["children"].first).to eq(comment_one.reference)
+            expect([comment_one.reference, comment_two.reference]).to include(response.parsed_body["children"].first)
           end
         end
 

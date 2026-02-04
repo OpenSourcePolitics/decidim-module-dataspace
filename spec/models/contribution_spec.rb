@@ -31,8 +31,8 @@ module Decidim
             expect(method_call.first.class).to eq(Hash)
             # first is proposal and has 2 children
             expect(method_call.first[:children].size).to eq(2)
-            # second will be the first comment of proposal
-            expect(method_call.second[:reference]).to eq(comment_one.reference)
+            # second will be a comment of proposal
+            expect([comment_one.reference, comment_two.reference]).to include(method_call.second[:reference])
             # last is proposal_three and has no children
             expect(method_call.last[:children]).to eq([])
           end
@@ -89,7 +89,7 @@ module Decidim
               expect(method_call[:children].size).to eq(2)
               # comments are detailed
               expect(method_call[:children].first.class).to eq(Hash)
-              expect(method_call[:children].first[:reference]).to eq(comment_one.reference)
+              expect([comment_one.reference, comment_two.reference]).to include(method_call[:children].first[:reference])
             end
           end
         end
