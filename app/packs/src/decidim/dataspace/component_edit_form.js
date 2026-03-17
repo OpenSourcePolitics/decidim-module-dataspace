@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function(){
     const localeDiv = document.querySelector("div.preferred_locale_container")
     const inputUrl = document.querySelector("input[name='component[settings][integration_url]']")
     inputUrl.setAttribute("placeholder", "https://platform.com, https://example.com")
+    const submitButton = document.querySelector("form button[type=submit]")
 
     if(integrationCheck){
         if(integrationCheck.checked){
@@ -17,14 +18,21 @@ document.addEventListener("DOMContentLoaded", function(){
             if (this.checked) {
                 urlDiv.style.display = "block";
                 localeDiv.style.display = "block";
+                inputUrl.addEventListener("blur", checkUrl)
             } else {
                 urlDiv.style.display = "none";
                 localeDiv.style.display = "none";
+                // allow to submit
+                submitButton.removeAttribute("disabled");
+                // remove error p if present
+                if (document.querySelector('p.url_input_error')){
+                    inputUrl.parentNode.removeChild(document.querySelector('p.url_input_error'));
+                }
             }
         })
     }
     // check validity of urls when input looses focus
-    inputUrl.addEventListener("blur", checkUrl)
+    inputUrl.addEventListener("keyup", checkUrl)
     function checkUrl(event){
         const values = event.target.value;
         const errors = [];
@@ -37,10 +45,12 @@ document.addEventListener("DOMContentLoaded", function(){
             }
         })
         if(errors.length !== 0 && inputUrl.parentNode.lastChild === inputUrl){
+            const lang = document.querySelector('html').getAttribute('lang')
             // create p
             const elem = document.createElement('p');
             // create content
-            const newContent = document.createTextNode("There is an invalid url");
+            let errorText = lang === 'fr' ? "Url non valide" : "Invalid url"
+            const newContent = document.createTextNode(errorText);
             // add content to p
             elem.appendChild(newContent);
             // add style and class to p
@@ -48,9 +58,12 @@ document.addEventListener("DOMContentLoaded", function(){
             elem.classList.add('url_input_error');
             // insert p after input
             inputUrl.after(elem);
+            // block the create or update
+            submitButton.setAttribute("disabled", "true")
         } else if(errors.length === 0 && inputUrl.parentNode.lastChild !== inputUrl){
             const elem = document.querySelector('p.url_input_error');
             inputUrl.parentNode.removeChild(elem);
+            submitButton.removeAttribute("disabled")
         }
     }
 })
